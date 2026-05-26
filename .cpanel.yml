@@ -1,10 +1,8 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/busnisscard/public_html/fit
+    - export DEPLOYPATH=/home/busnisscard/public_html/fitness-platform
     - /bin/cp -R * $DEPLOYPATH
-    - /bin/cp .env.example $DEPLOYPATH/.env
+    - /bin/cp -R .[!.]* $DEPLOYPATH
     - cd $DEPLOYPATH
-    - php artisan key:generate --force
     - php artisan storage:link --force
-    - php artisan migrate --force
