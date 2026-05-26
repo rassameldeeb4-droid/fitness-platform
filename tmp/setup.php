@@ -18,8 +18,8 @@ echo "Running storage:link...\n";
 Artisan::call('storage:link', ['--force' => true]);
 echo Artisan::output() . "\n";
 
-echo "Running migrate...\n";
-Artisan::call('migrate', ['--force' => true, '--seed' => false]);
+echo "Running migrate:fresh...\n";
+Artisan::call('migrate:fresh', ['--force' => true, '--seed' => false]);
 echo Artisan::output() . "\n";
 
 echo "Done! You can delete this file now.</pre>";
