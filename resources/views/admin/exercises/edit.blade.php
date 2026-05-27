@@ -67,7 +67,10 @@
                     </video>
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">فيديو مرفوع</span>
                     @endif
-                    <a href="{{ route('admin.exercises.delete-video', $exercise) }}" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D" onclick="return confirm('حذف الفيديو؟')"><i class="ti ti-trash"></i></a>
+                    <form method="POST" action="{{ route('admin.exercises.delete-video', $exercise) }}" style="display:inline" onsubmit="return confirm('حذف الفيديو؟')">
+                        @csrf
+                        <button type="submit" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
+                    </form>
                 </div>
                 @endif
             </div>
@@ -78,7 +81,10 @@
                 <div style="margin-top:8px;padding:8px;background:#F5F5F5;border-radius:8px;display:flex;align-items:center;gap:8px">
                     <img src="{{ asset('storage/' . $exercise->image) }}" style="width:80px;height:80px;border-radius:6px;object-fit:cover">
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">الصورة الحالية</span>
-                    <a href="{{ route('admin.exercises.delete-image', $exercise) }}" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D" onclick="return confirm('حذف الصورة؟')"><i class="ti ti-trash"></i></a>
+                    <form method="POST" action="{{ route('admin.exercises.delete-image', $exercise) }}" style="display:inline" onsubmit="return confirm('حذف الصورة؟')">
+                        @csrf
+                        <button type="submit" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
+                    </form>
                 </div>
                 @endif
             </div>

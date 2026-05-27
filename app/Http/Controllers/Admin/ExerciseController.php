@@ -113,9 +113,8 @@ class ExerciseController extends Controller
         return redirect()->route('admin.exercises.index')->with('success', 'تم حذف التمرين بنجاح');
     }
 
-    public function deleteImage($id)
+    public function deleteImage(Exercise $exercise)
     {
-        $exercise = Exercise::findOrFail($id);
         try {
             if ($exercise->image) {
                 Storage::disk('public')->delete($exercise->image);
@@ -127,9 +126,8 @@ class ExerciseController extends Controller
         }
     }
 
-    public function deleteVideo($id)
+    public function deleteVideo(Exercise $exercise)
     {
-        $exercise = Exercise::findOrFail($id);
         try {
             if ($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($exercise->video_url);
