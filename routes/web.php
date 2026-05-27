@@ -91,8 +91,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/exercises/{exercise}/edit', [AdminExerciseController::class, 'edit'])->name('exercises.edit');
         Route::put('/exercises/{exercise}', [AdminExerciseController::class, 'update'])->name('exercises.update');
         Route::delete('/exercises/{exercise}', [AdminExerciseController::class, 'destroy'])->name('exercises.destroy');
-        Route::post('/exercises/{exercise}/delete-image', [AdminExerciseController::class, 'deleteImage'])->name('exercises.delete-image');
-        Route::post('/exercises/{exercise}/delete-video', [AdminExerciseController::class, 'deleteVideo'])->name('exercises.delete-video');
+        Route::get('/exercises/{exercise}/delete-image', [AdminExerciseController::class, 'deleteImage'])->name('exercises.delete-image');
+        Route::get('/exercises/{exercise}/delete-video', [AdminExerciseController::class, 'deleteVideo'])->name('exercises.delete-video');
 
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
