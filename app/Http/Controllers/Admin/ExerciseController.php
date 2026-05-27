@@ -113,17 +113,23 @@ class ExerciseController extends Controller
         return redirect()->route('admin.exercises.index')->with('success', 'تم حذف التمرين بنجاح');
     }
 
-    public function deleteImage(Exercise $exercise)
+    public function deleteImage($id)
     {
-        if ($exercise->image) {
-            Storage::disk('public')->delete($exercise->image);
-            $exercise->update(['image' => null]);
+        $exercise = Exercise::findOrFail($id);
+        try {
+            if ($exercise->image) {
+                Storage::disk('public')->delete($exercise->image);
+                $exercise->update(['image' => null]);
+            }
+            return back()->with('success', 'تم حذف الصورة');
+        } catch (\Exception $e) {
+            return back()->with('error', 'خطأ: ' . $e->getMessage());
         }
-        return back()->with('success', 'تم حذف الصورة');
     }
 
-    public function deleteVideo(Exercise $exercise)
+    public function deleteVideo($id)
     {
+        $exercise = Exercise::findOrFail($id);
         try {
             if ($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($exercise->video_url);

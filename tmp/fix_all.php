@@ -1,14 +1,15 @@
 <?php
-// Self-update: always download latest version from GitHub
+// Self-update: always try to get latest version from GitHub
 $self = __FILE__;
 $url = 'https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/tmp/fix_all.php?_=' . time();
 $latest = @file_get_contents($url);
 if ($latest) {
-    $current = file_exists($self) ? md5(file_get_contents($self)) : '';
+    $localContent = file_exists($self) ? file_get_contents($self) : '';
     $newHash = md5($latest);
-    if ($newHash !== $current) {
+    $oldHash = md5($localContent);
+    if ($newHash !== $oldHash) {
         file_put_contents($self, $latest);
-        echo "🔄 Self-updated to latest version\n\n";
+        echo "🔄 Self-updated (new hash: $newHash)\n\n";
         eval('?>' . $latest);
         exit;
     }
@@ -16,7 +17,7 @@ if ($latest) {
 
 // If we get here, we're already the latest version
 echo "<pre>=== Fitness Platform Auto-Fix ===\n";
-echo "Version: v1.2 | " . date('Y-m-d H:i') . "\n\n";
+echo "Version: v1.3 | " . date('Y-m-d H:i') . "\n\n";
 
 require_once __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';

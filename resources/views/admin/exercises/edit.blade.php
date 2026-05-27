@@ -63,7 +63,7 @@
                     <a href="{{ $exercise->video_url }}" target="_blank" style="flex:1;font-size:12px;color:#185FA5"><i class="ti ti-video"></i> فتح الفيديو الخارجي</a>
                     @else
                     <video controls style="width:160px;height:90px;border-radius:6px;object-fit:cover">
-                        <source src="{{ Storage::url($exercise->video_url) }}" type="video/mp4">
+                        <source src="{{ asset('storage/' . $exercise->video_url) }}" type="video/mp4">
                     </video>
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">فيديو مرفوع</span>
                     @endif
