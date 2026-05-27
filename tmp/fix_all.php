@@ -52,6 +52,7 @@ $files = [
     'resources/views/admin/trainer-trainees.blade.php',
     'resources/views/admin/exercises/create.blade.php',
     'resources/views/admin/exercises/edit.blade.php',
+    'app/Http/Controllers/Admin/ExerciseController.php',
     'tmp/fix_storage.php',
     'tmp/showlog.php',
 ];
