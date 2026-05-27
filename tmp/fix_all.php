@@ -42,6 +42,10 @@ $files = [
     'resources/views/doctor/dashboard.blade.php',
     'database/migrations/2026_05_27_000001_create_appointments_table.php',
     'routes/web.php',
+    'app/Http/Controllers/Admin/TrainerController.php',
+    'resources/views/admin/trainer-create.blade.php',
+    'resources/views/admin/trainer-edit.blade.php',
+    'resources/views/admin/trainer-trainees.blade.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {

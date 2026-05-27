@@ -62,7 +62,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/members', [AdminMemberController::class, 'store'])->name('members.store');
         Route::get('/members/{id}', [AdminMemberController::class, 'show'])->name('members.show');
         Route::get('/trainers', [AdminTrainerController::class, 'index'])->name('trainers');
+        Route::get('/trainers/create', [AdminTrainerController::class, 'create'])->name('trainers.create');
+        Route::post('/trainers', [AdminTrainerController::class, 'store'])->name('trainers.store');
         Route::get('/trainers/{id}', [AdminTrainerController::class, 'show'])->name('trainers.show');
+        Route::get('/trainers/{id}/edit', [AdminTrainerController::class, 'edit'])->name('trainers.edit');
+        Route::put('/trainers/{id}', [AdminTrainerController::class, 'update'])->name('trainers.update');
+        Route::delete('/trainers/{id}', [AdminTrainerController::class, 'destroy'])->name('trainers.destroy');
+        Route::get('/trainers/{id}/trainees', [AdminTrainerController::class, 'trainees'])->name('trainers.trainees');
         Route::get('/gyms', [AdminGymController::class, 'index'])->name('gyms');
         Route::post('/gyms', [AdminGymController::class, 'store'])->name('gyms.store');
         Route::get('/packages', [AdminPackageController::class, 'index'])->name('packages');
