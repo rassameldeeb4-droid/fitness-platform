@@ -33,4 +33,21 @@ if (!file_exists($view)) {
 $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
 
+// Fix app.blade.php for sidebar
+$appLayout = __DIR__ . '/../resources/views/layouts/app.blade.php';
+$layoutContent = file_get_contents($appLayout);
+$needsSidebarFix = strpos($layoutContent, "admin.doctors") === false;
+if ($needsSidebarFix) {
+    $layoutContent = str_replace(
+        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
+            <a href="{{ route(\'admin.gyms\') }}" class="nav-item {{ $r(\'admin.gyms\') ? \'active-page\' : \'\' }}"><i class="ti ti-building"></i> الصالات</a>',
+        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
+            <a href="{{ route(\'admin.doctors\') }}" class="nav-item {{ $r(\'admin.doctors\') ? \'active-page\' : \'\' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>
+            <a href="{{ route(\'admin.gyms\') }}" class="nav-item {{ $r(\'admin.gyms\') ? \'active-page\' : \'\' }}"><i class="ti ti-building"></i> الصالات</a>',
+        $layoutContent
+    );
+    file_put_contents($appLayout, $layoutContent);
+    echo "app.blade.php sidebar updated\n";
+} else echo "app.blade.php sidebar OK\n";
+
 echo "\nDone! جرب الآن: https://busnisscard.com/platform/public/</pre>";
