@@ -16,6 +16,7 @@ if ($latest) {
 
 // If we get here, we're already the latest version
 echo "<pre>=== Fitness Platform Auto-Fix ===\n\n";
+echo "Version: " . md5_file(__FILE__) . "\n\n";
 
 require_once __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
@@ -125,9 +126,8 @@ echo $ch > 0 ? "updated ($ch changes)\n" : "already ok\n";
 
 // Clear view & route cache
 $cache = __DIR__ . '/../storage/framework/views';
-if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "\nView cache cleared\n"; }
-$routeCache = __DIR__ . '/../bootstrap/cache/routes-v7.php';
-if (file_exists($routeCache)) { unlink($routeCache); echo "Route cache cleared\n"; }
+if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
+foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo "Removed: " . basename($f) . "\n"; }
 
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
