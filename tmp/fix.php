@@ -53,4 +53,22 @@ if (!$admin) {
     echo "  Admin user already exists\n";
 }
 
+// Update CDN + add preconnect for faster loading
+$appLayout = __DIR__ . '/../resources/views/layouts/app.blade.php';
+$content = file_get_contents($appLayout);
+$content = str_replace(
+    'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.30.0/tabler-icons.min.css',
+    $content
+);
+$content = str_replace(
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n" .
+    '    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>' . "\n" .
+    '    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">',
+    $content
+);
+file_put_contents($appLayout, $content);
+echo "  CDN + preconnect updated\n";
+
 echo "\nAll fixes applied!</pre>";
