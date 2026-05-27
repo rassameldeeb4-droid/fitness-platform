@@ -6,18 +6,12 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+Schema::defaultStringLength(191);
 
 echo "<pre>";
-
-echo "Running key:generate...\n";
-Artisan::call('key:generate', ['--force' => true]);
-echo Artisan::output() . "\n";
-
-echo "Running storage:link...\n";
-Artisan::call('storage:link', ['--force' => true]);
-echo Artisan::output() . "\n";
 
 echo "Dropping all tables...\n";
 DB::statement('SET FOREIGN_KEY_CHECKS=0');
@@ -29,8 +23,19 @@ foreach ($tables as $table) {
 DB::statement('SET FOREIGN_KEY_CHECKS=1');
 echo "All tables dropped.\n";
 
-echo "Running migrate...\n";
-Artisan::call('migrate', ['--force' => true, '--seed' => false]);
-echo Artisan::output() . "\n";
-
-echo "Done! You can delete this file now.</pre>";
+echo "Running migrations directly...\n";
+$migrations = glob(__DIR__ . '/../database/migrations/*.php');
+sort($migrations);
+foreach ($migrations as $file) {
+    $name = basename($file);
+    echo "  Running: $name\n";
+    try {
+        $migration = require $file;
+        $migration->up();
+        echo "    OK\n";
+    } catch (\Exception $e) {
+        echo "    ERROR: " . $e->getMessage() . "\n";
+        echo "    Skipping...\n";
+    }
+}
+echo "Done!</pre>";
