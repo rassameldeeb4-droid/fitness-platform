@@ -3,6 +3,13 @@
 @section('content')
 <div class="page-title">تعديل التمرين</div>
 <div class="card">
+    @php $vid = 'del-vid-' . $exercise->id; $iid = 'del-img-' . $exercise->id; @endphp
+    @if($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL))
+    <form id="{{ $vid }}" method="POST" action="{{ route('admin.exercises.delete-video', $exercise) }}" style="display:none">@csrf</form>
+    @endif
+    @if($exercise->image)
+    <form id="{{ $iid }}" method="POST" action="{{ route('admin.exercises.delete-image', $exercise) }}" style="display:none">@csrf</form>
+    @endif
     <form method="POST" action="{{ route('admin.exercises.update', $exercise) }}" enctype="multipart/form-data">
         @csrf @method('PUT')
         <div class="grid-2">
@@ -67,10 +74,7 @@
                     </video>
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">فيديو مرفوع</span>
                     @endif
-                    <form method="POST" action="{{ route('admin.exercises.delete-video', $exercise) }}" style="display:inline" onsubmit="return confirm('حذف الفيديو؟')">
-                        @csrf
-                        <button type="submit" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
-                    </form>
+                    <button type="submit" form="{{ $vid }}" onclick="return confirm('حذف الفيديو؟')" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
                 </div>
                 @endif
             </div>
@@ -81,10 +85,7 @@
                 <div style="margin-top:8px;padding:8px;background:#F5F5F5;border-radius:8px;display:flex;align-items:center;gap:8px">
                     <img src="{{ asset('storage/' . $exercise->image) }}" style="width:80px;height:80px;border-radius:6px;object-fit:cover">
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">الصورة الحالية</span>
-                    <form method="POST" action="{{ route('admin.exercises.delete-image', $exercise) }}" style="display:inline" onsubmit="return confirm('حذف الصورة؟')">
-                        @csrf
-                        <button type="submit" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
-                    </form>
+                    <button type="submit" form="{{ $iid }}" onclick="return confirm('حذف الصورة؟')" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D"><i class="ti ti-trash"></i></button>
                 </div>
                 @endif
             </div>
