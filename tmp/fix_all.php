@@ -123,9 +123,11 @@ if (strpos($c, 'member.appointments') === false) {
 file_put_contents($layout, $c);
 echo $ch > 0 ? "updated ($ch changes)\n" : "already ok\n";
 
-// Clear view cache
+// Clear view & route cache
 $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "\nView cache cleared\n"; }
+$routeCache = __DIR__ . '/../bootstrap/cache/routes-v7.php';
+if (file_exists($routeCache)) { unlink($routeCache); echo "Route cache cleared\n"; }
 
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
