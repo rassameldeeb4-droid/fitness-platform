@@ -318,6 +318,7 @@ if ($role === 'admin') {
 } elseif ($role === 'doctor') {
     $bottomItems = [
         ['route' => 'doctor.dashboard', 'icon' => 'ti ti-stethoscope', 'label' => 'عيادتي'],
+        ['route' => 'doctor.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],
         ['route' => 'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'],
         ['route' => 'chat.index', 'icon' => 'ti ti-message-circle', 'label' => 'المحادثات'],
         ['route' => 'exercises', 'icon' => 'ti ti-barbell', 'label' => 'التمارين'],
@@ -333,6 +334,7 @@ if ($role === 'admin') {
         ['route' => 'member.progress', 'icon' => 'ti ti-chart-line', 'label' => 'تقدمي'],
     ];
     $moreItems = [
+        ['route' => 'member.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],
         ['route' => 'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'],
         ['route' => 'chat.index', 'icon' => 'ti ti-message-circle', 'label' => 'المحادثات'],
         ['route' => 'member.notifications', 'icon' => 'ti ti-bell', 'label' => 'التنبيهات'],

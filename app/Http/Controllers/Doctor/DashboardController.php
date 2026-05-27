@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\TimelineEvent;
 use App\Models\WorkoutPlan;
 use App\Models\NutritionPlan;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -26,8 +27,16 @@ class DashboardController extends Controller
         $workoutPlansCount = WorkoutPlan::where('trainer_id', $doctorId)->count();
         $nutritionPlansCount = NutritionPlan::where('trainer_id', $doctorId)->count();
 
+        $upcomingAppointments = Appointment::where('doctor_id', $doctorId)
+            ->where('scheduled_at', '>=', now())
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->with('member')
+            ->orderBy('scheduled_at')
+            ->take(5)
+            ->get();
+
         return view('doctor.dashboard', compact(
-            'patientCount', 'recentEvents', 'workoutPlansCount', 'nutritionPlansCount'
+            'patientCount', 'recentEvents', 'workoutPlansCount', 'nutritionPlansCount', 'upcomingAppointments'
         ));
     }
 }

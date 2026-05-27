@@ -50,4 +50,29 @@ if ($needsSidebarFix) {
     echo "app.blade.php sidebar updated\n";
 } else echo "app.blade.php sidebar OK\n";
 
+// Run appointments migration
+$appMigration = __DIR__ . '/../database/migrations/2026_05_27_000001_create_appointments_table.php';
+if (file_exists($appMigration)) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
+    $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+    $kernel->bootstrap();
+    if (!Illuminate\Support\Facades\Schema::hasTable('appointments')) {
+        Illuminate\Support\Facades\Schema::create('appointments', function ($table) {
+            $table->id();
+            $table->unsignedBigInteger('doctor_id');
+            $table->unsignedBigInteger('member_id');
+            $table->dateTime('scheduled_at');
+            $table->integer('duration_minutes')->default(30);
+            $table->string('status', 20)->default('pending');
+            $table->text('notes')->nullable();
+            $table->text('cancellation_reason')->nullable();
+            $table->timestamps();
+            $table->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('member_id')->references('id')->on('users')->onDelete('cascade');
+        });
+        echo "appointments table created\n";
+    } else echo "appointments table exists\n";
+}
+
 echo "\nDone! جرب الآن: https://busnisscard.com/platform/public/</pre>";

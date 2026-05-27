@@ -49,8 +49,15 @@ $typeMeta = [
     </div>
 </div>
 <div class="card">
-    <div class="card-title"><i class="ti ti-calendar" style="color:#534AB7"></i> مواعيد اليوم</div>
-    <div style="text-align:center;padding:1rem;color:var(--color-text-tertiary);font-size:13px">لا توجد مواعيد مسجلة</div>
+    <div class="card-title"><i class="ti ti-calendar" style="color:#534AB7"></i> المواعيد القادمة</div>
+    @forelse($upcomingAppointments as $a)
+    <a href="{{ route('doctor.appointments.show', $a->id) }}" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);text-decoration:none;color:inherit;font-size:13px">
+        <span>{{ $a->member->name }}</span>
+        <span style="color:var(--color-text-tertiary);font-size:11px">{{ $a->scheduled_at->format('h:i A') }}</span>
+    </a>
+    @empty
+    <div style="text-align:center;padding:1rem;color:var(--color-text-tertiary);font-size:13px">لا توجد مواعيد قادمة</div>
+    @endforelse
 </div>
 </div>
 </div>

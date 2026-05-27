@@ -21,11 +21,13 @@ use App\Http\Controllers\Doctor\DashboardController as DoctorDashboardController
 use App\Http\Controllers\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Doctor\NutritionPlanController as DoctorNutritionPlanController;
 use App\Http\Controllers\Doctor\WorkoutPlanController as DoctorWorkoutPlanController;
+use App\Http\Controllers\Doctor\AppointmentController as DoctorAppointmentController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\NutritionController as MemberNutritionController;
 use App\Http\Controllers\Member\WorkoutController as MemberWorkoutController;
 use App\Http\Controllers\Member\ProgressController as MemberProgressController;
 use App\Http\Controllers\Member\NotificationController as MemberNotificationController;
+use App\Http\Controllers\Member\AppointmentController as MemberAppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ChatController;
@@ -127,6 +129,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/workout/create/{memberId}', [DoctorWorkoutPlanController::class, 'create'])->name('workout.create');
         Route::post('/workout', [DoctorWorkoutPlanController::class, 'store'])->name('workout.store');
         Route::get('/workout/{id}', [DoctorWorkoutPlanController::class, 'show'])->name('workout.show');
+
+        Route::get('/appointments', [DoctorAppointmentController::class, 'index'])->name('appointments');
+        Route::get('/appointments/create', [DoctorAppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('/appointments', [DoctorAppointmentController::class, 'store'])->name('appointments.store');
+        Route::get('/appointments/{appointment}', [DoctorAppointmentController::class, 'show'])->name('appointments.show');
+        Route::post('/appointments/{appointment}/complete', [DoctorAppointmentController::class, 'complete'])->name('appointments.complete');
+        Route::post('/appointments/{appointment}/cancel', [DoctorAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
     // Member Routes
@@ -141,6 +150,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/progress', [MemberProgressController::class, 'store'])->name('progress.store');
         Route::get('/notifications', [MemberNotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications', [MemberNotificationController::class, 'update'])->name('notifications.update');
+
+        Route::get('/appointments', [MemberAppointmentController::class, 'index'])->name('appointments');
     });
 
     // Shared Routes (accessible by any authenticated user)
