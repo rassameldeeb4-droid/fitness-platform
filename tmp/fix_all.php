@@ -1,25 +1,30 @@
 <?php
+// Self-update: always download latest version from GitHub
+$self = __FILE__;
+$url = 'https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/tmp/fix_all.php?_=' . time();
+$latest = @file_get_contents($url);
+if ($latest) {
+    $current = file_exists($self) ? md5(file_get_contents($self)) : '';
+    $newHash = md5($latest);
+    if ($newHash !== $current) {
+        file_put_contents($self, $latest);
+        echo "🔄 Self-updated to latest version\n\n";
+        eval('?>' . $latest);
+        exit;
+    }
+}
+
+// If we get here, we're already the latest version
 echo "<pre>=== Fitness Platform Auto-Fix ===\n\n";
 
-// 1. Bootstrap Laravel
 require_once __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
-// 2. Fix routes/web.php
-echo "1. routes/web.php... ";
-$correct = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/routes/web.php');
-if ($correct) {
-    file_put_contents(__DIR__ . '/../routes/web.php', $correct);
-    $r = `php -l "` . __DIR__ . '/../routes/web.php' . `" 2>&1`;
-    echo strpos($r, 'No syntax') !== false ? "OK\n" : "SYNTAX ERROR\n$r\n";
-} else echo "DOWNLOAD FAILED\n";
-
-// 3. Download & create missing files from GitHub
-echo "\n2. Downloading missing files...\n";
+// Download & create ALL missing files from GitHub
+echo "Downloading missing files...\n";
 $files = [
     'app/Http/Controllers/Admin/DoctorController.php',
     'app/Http/Controllers/Doctor/AppointmentController.php',
@@ -36,102 +41,88 @@ $files = [
     'resources/views/member/appointments.blade.php',
     'resources/views/doctor/dashboard.blade.php',
     'database/migrations/2026_05_27_000001_create_appointments_table.php',
+    'routes/web.php',
 ];
+$ok = 0; $fail = 0;
 foreach ($files as $f) {
     $local = __DIR__ . '/../' . $f;
     $dir = dirname($local);
-    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
     $content = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/' . $f);
     if ($content) {
         file_put_contents($local, $content);
-        echo "  ✅ $f\n";
+        echo "  ✅ $f\n"; $ok++;
     } else {
-        echo "  ❌ $f (download failed)\n";
+        echo "  ❌ $f\n"; $fail++;
     }
 }
+echo "\n$ok files created/updated, $fail failed\n";
 
-// 4. Create appointments table if not exists
-echo "\n3. Appointments table... ";
+// Create appointments table
+echo "\nAppointments table... ";
 if (!Schema::hasTable('appointments')) {
-    Schema::create('appointments', function ($table) {
-        $table->id();
-        $table->unsignedBigInteger('doctor_id');
-        $table->unsignedBigInteger('member_id');
-        $table->dateTime('scheduled_at');
-        $table->integer('duration_minutes')->default(30);
-        $table->string('status', 20)->default('pending');
-        $table->text('notes')->nullable();
-        $table->text('cancellation_reason')->nullable();
-        $table->timestamps();
-        $table->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
-        $table->foreign('member_id')->references('id')->on('users')->onDelete('cascade');
+    Schema::create('appointments', function ($t) {
+        $t->id();
+        $t->unsignedBigInteger('doctor_id');
+        $t->unsignedBigInteger('member_id');
+        $t->dateTime('scheduled_at');
+        $t->integer('duration_minutes')->default(30);
+        $t->string('status', 20)->default('pending');
+        $t->text('notes')->nullable();
+        $t->text('cancellation_reason')->nullable();
+        $t->timestamps();
+        $t->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
+        $t->foreign('member_id')->references('id')->on('users')->onDelete('cascade');
     });
-    echo "created\n";
-} else echo "exists\n";
+    echo "created ✅\n";
+} else echo "exists ✅\n";
 
-// 5. Fix app.blade.php sidebar (add doctors + appointments links)
-echo "\n4. app.blade.php sidebar... ";
+// Fix app.blade.php sidebar links
+echo "\nSidebar links... ";
 $layout = __DIR__ . '/../resources/views/layouts/app.blade.php';
 $c = file_get_contents($layout);
+$ch = 0;
 
-$changes = 0;
+// Doctors in sidebar nav
+if (strpos($c, 'admin.doctors') === false) {
+    $c = str_replace(
+        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>',
+        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
+            <a href="{{ route(\'admin.doctors\') }}" class="nav-item {{ $r(\'admin.doctors\') ? \'active-page\' : \'\' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>',
+        $c
+    );
+    $ch++;
+}
 
-// Add doctors link after trainers in sidebar (admin & super_admin sections)
-$c = str_replace(
-    '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
-            <a href="{{ route(\'admin.gyms\') }}" class="nav-item {{ $r(\'admin.gyms\') ? \'active-page\' : \'\' }}"><i class="ti ti-building"></i> الصالات</a>',
-    '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
-            <a href="{{ route(\'admin.doctors\') }}" class="nav-item {{ $r(\'admin.doctors\') ? \'active-page\' : \'\' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>
-            <a href="{{ route(\'admin.gyms\') }}" class="nav-item {{ $r(\'admin.gyms\') ? \'active-page\' : \'\' }}"><i class="ti ti-building"></i> الصالات</a>',
-    $c
-);
-
-// Add appointments link for doctor in bottomItems
+// Doctor appointments in bottomItems
 if (strpos($c, 'doctor.appointments') === false) {
     $c = str_replace(
-        "['route' => 'doctor.dashboard', 'icon' => 'ti ti-stethoscope', 'label' => 'عيادتي'],\n        ['route' => 'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'],",
-        "['route' => 'doctor.dashboard', 'icon' => 'ti ti-stethoscope', 'label' => 'عيادتي'],\n        ['route' => 'doctor.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'],",
+        "'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'",
+        "'doctor.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'",
         $c
     );
-    $changes++;
+    $ch++;
 }
 
-// Add appointments link for member in moreItems
+// Member appointments in moreItems
 if (strpos($c, 'member.appointments') === false) {
     $c = str_replace(
-        "['route' => 'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'],",
-        "['route' => 'member.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'],",
+        "'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'",
+        "'member.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'",
         $c
     );
-    $changes++;
-}
-
-// Add doctors to moreItems for admin
-if (strpos($c, "'admin.doctors'") === false || strpos($c, "'admin.doctors'") !== false) {
-    $c = str_replace(
-        "['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],\n        ['route' => 'admin.revenue', 'icon' => 'ti ti-chart-bar', 'label' => 'الأرباح'],",
-        "['route' => 'admin.doctors', 'icon' => 'ti ti-stethoscope', 'label' => 'الأطباء'],\n        ['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],\n        ['route' => 'admin.revenue', 'icon' => 'ti ti-chart-bar', 'label' => 'الأرباح'],",
-        $c
-    );
-    $c = str_replace(
-        "['route' => 'admin.trainers', 'icon' => 'ti ti-user-star', 'label' => 'المدربون'],\n        ['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],",
-        "['route' => 'admin.trainers', 'icon' => 'ti ti-user-star', 'label' => 'المدربون'],\n        ['route' => 'admin.doctors', 'icon' => 'ti ti-stethoscope', 'label' => 'الأطباء'],\n        ['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],",
-        $c
-    );
-    $changes++;
+    $ch++;
 }
 
 file_put_contents($layout, $c);
-echo $changes > 0 ? "updated ($changes changes)\n" : "already up-to-date\n";
+echo $ch > 0 ? "updated ($ch changes)\n" : "already ok\n";
 
-// 6. Clear view cache
-echo "\n5. View cache... ";
-$cacheDir = __DIR__ . '/../storage/framework/views';
-if (is_dir($cacheDir)) { array_map('unlink', glob($cacheDir . '/*')); echo "cleared\n"; } else echo "not found\n";
+// Clear view cache
+$cache = __DIR__ . '/../storage/framework/views';
+if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "\nView cache cleared\n"; }
 
-echo "\n=== Done! ===";
-echo "\nالروابط الجديدة:";
-echo "\n- admin/doctors (الادارة → الأطباء)";
-echo "\n- doctor/appointments (دكتور → المواعيد)";
-echo "\n- member/appointments (عضو → المواعيد)";
+echo "\n=== ✅ Done! ===";
+echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
+echo "\nDoctor: /doctor/appointments (إدارة المواعيد)";
+echo "\nMember: /member/appointments (عرض المواعيد)";
 echo "\n\nhttps://busnisscard.com/platform/public/</pre>";
