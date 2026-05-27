@@ -73,9 +73,17 @@
             </label>
         </div>
         <div style="margin-top:1rem">
-            <button type="submit" class="btn btn-primary"><i class="ti ti-check"></i> حفظ</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn"><i class="ti ti-check"></i> حفظ</button>
             <a href="{{ route('admin.exercises.index') }}" class="btn">إلغاء</a>
         </div>
     </form>
 </div>
+<div id="loadingOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center">
+    <div style="background:var(--color-background-primary);padding:2rem;border-radius:var(--border-radius-lg);text-align:center">
+        <div style="width:40px;height:40px;border:3px solid #534AB7;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem"></div>
+        <div style="font-size:14px;color:var(--color-text-secondary)">جاري حفظ التمرين...</div>
+    </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>document.querySelector('form').addEventListener('submit',function(){document.getElementById('loadingOverlay').style.display='flex';document.getElementById('submitBtn').disabled=true;});</script>
 @endsection

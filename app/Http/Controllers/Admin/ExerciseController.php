@@ -112,4 +112,22 @@ class ExerciseController extends Controller
         $exercise->delete();
         return redirect()->route('admin.exercises.index')->with('success', 'تم حذف التمرين بنجاح');
     }
+
+    public function deleteImage(Exercise $exercise)
+    {
+        if ($exercise->image) {
+            Storage::disk('public')->delete($exercise->image);
+            $exercise->update(['image' => null]);
+        }
+        return back()->with('success', 'تم حذف الصورة');
+    }
+
+    public function deleteVideo(Exercise $exercise)
+    {
+        if ($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL)) {
+            Storage::disk('public')->delete($exercise->video_url);
+            $exercise->update(['video_url' => null]);
+        }
+        return back()->with('success', 'تم حذف الفيديو');
+    }
 }

@@ -57,15 +57,29 @@
             <div class="input-grp">
                 <label>رفع فيديو</label>
                 <input type="file" name="video" accept="video/*">
-                @if($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL))
-                <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px">فيديو موجود مسبقاً</div>
+                @if($exercise->video_url)
+                <div style="margin-top:8px;padding:8px;background:#F5F5F5;border-radius:8px;display:flex;align-items:center;gap:8px">
+                    @if(filter_var($exercise->video_url, FILTER_VALIDATE_URL))
+                    <a href="{{ $exercise->video_url }}" target="_blank" style="flex:1;font-size:12px;color:#185FA5"><i class="ti ti-video"></i> فتح الفيديو الخارجي</a>
+                    @else
+                    <video controls style="width:160px;height:90px;border-radius:6px;object-fit:cover">
+                        <source src="{{ Storage::url($exercise->video_url) }}" type="video/mp4">
+                    </video>
+                    <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">فيديو مرفوع</span>
+                    @endif
+                    <a href="{{ route('admin.exercises.delete-video', $exercise) }}" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D" onclick="return confirm('حذف الفيديو؟')"><i class="ti ti-trash"></i></a>
+                </div>
                 @endif
             </div>
             <div class="input-grp">
                 <label>صورة توضيحية</label>
                 <input type="file" name="image" accept="image/*">
                 @if($exercise->image)
-                <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px"><img src="{{ Storage::url($exercise->image) }}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-left:6px"> الصورة الحالية</div>
+                <div style="margin-top:8px;padding:8px;background:#F5F5F5;border-radius:8px;display:flex;align-items:center;gap:8px">
+                    <img src="{{ Storage::url($exercise->image) }}" style="width:80px;height:80px;border-radius:6px;object-fit:cover">
+                    <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">الصورة الحالية</span>
+                    <a href="{{ route('admin.exercises.delete-image', $exercise) }}" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D" onclick="return confirm('حذف الصورة؟')"><i class="ti ti-trash"></i></a>
+                </div>
                 @endif
             </div>
         </div>

@@ -46,6 +46,8 @@ $files = [
     'resources/views/admin/trainer-create.blade.php',
     'resources/views/admin/trainer-edit.blade.php',
     'resources/views/admin/trainer-trainees.blade.php',
+    'resources/views/admin/exercises/create.blade.php',
+    'resources/views/admin/exercises/edit.blade.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
