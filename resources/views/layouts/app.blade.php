@@ -283,6 +283,7 @@ if ($role === 'admin') {
         ['route' => 'admin.packages', 'icon' => 'ti ti-credit-card', 'label' => 'الباقات'],
     ];
     $moreItems = [
+        ['route' => 'admin.doctors', 'icon' => 'ti ti-stethoscope', 'label' => 'الأطباء'],
         ['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],
         ['route' => 'admin.revenue', 'icon' => 'ti ti-chart-bar', 'label' => 'الأرباح'],
         ['route' => 'admin.settings', 'icon' => 'ti ti-settings', 'label' => 'الإعدادات'],
@@ -296,6 +297,7 @@ if ($role === 'admin') {
     ];
     $moreItems = [
         ['route' => 'admin.trainers', 'icon' => 'ti ti-user-star', 'label' => 'المدربون'],
+        ['route' => 'admin.doctors', 'icon' => 'ti ti-stethoscope', 'label' => 'الأطباء'],
         ['route' => 'admin.gyms', 'icon' => 'ti ti-building', 'label' => 'الصالات'],
         ['route' => 'admin.packages', 'icon' => 'ti ti-credit-card', 'label' => 'الباقات'],
         ['route' => 'admin.revenue', 'icon' => 'ti ti-chart-bar', 'label' => 'الأرباح'],

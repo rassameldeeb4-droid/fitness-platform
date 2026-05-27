@@ -88,6 +88,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
 
         Route::get('/doctors', [AdminDoctorController::class, 'index'])->name('doctors');
+        Route::get('/doctors/create', [AdminDoctorController::class, 'create'])->name('doctors.create');
+        Route::post('/doctors', [AdminDoctorController::class, 'store'])->name('doctors.store');
+        Route::get('/doctors/{id}', [AdminDoctorController::class, 'show'])->name('doctors.show');
+        Route::get('/doctors/{id}/edit', [AdminDoctorController::class, 'edit'])->name('doctors.edit');
+        Route::put('/doctors/{id}', [AdminDoctorController::class, 'update'])->name('doctors.update');
+        Route::delete('/doctors/{id}', [AdminDoctorController::class, 'destroy'])->name('doctors.destroy');
+        Route::get('/doctors/{id}/patients', [AdminDoctorController::class, 'patients'])->name('doctors.patients');
     });
 
     // Trainer Routes
