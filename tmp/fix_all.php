@@ -15,8 +15,8 @@ if ($latest) {
 }
 
 // If we get here, we're already the latest version
-echo "<pre>=== Fitness Platform Auto-Fix ===\n\n";
-echo "Version: " . md5_file(__FILE__) . "\n\n";
+echo "<pre>=== Fitness Platform Auto-Fix ===\n";
+echo "Version: v1.2 | " . date('Y-m-d H:i') . "\n\n";
 
 require_once __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
@@ -49,6 +49,7 @@ $files = [
     'resources/views/admin/trainer-trainees.blade.php',
     'resources/views/admin/exercises/create.blade.php',
     'resources/views/admin/exercises/edit.blade.php',
+    'tmp/fix_storage.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {

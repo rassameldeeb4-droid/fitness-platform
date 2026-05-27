@@ -76,7 +76,7 @@
                 <input type="file" name="image" accept="image/*">
                 @if($exercise->image)
                 <div style="margin-top:8px;padding:8px;background:#F5F5F5;border-radius:8px;display:flex;align-items:center;gap:8px">
-                    <img src="{{ Storage::url($exercise->image) }}" style="width:80px;height:80px;border-radius:6px;object-fit:cover">
+                    <img src="{{ asset('storage/' . $exercise->image) }}" style="width:80px;height:80px;border-radius:6px;object-fit:cover">
                     <span style="flex:1;font-size:12px;color:var(--color-text-secondary)">الصورة الحالية</span>
                     <a href="{{ route('admin.exercises.delete-image', $exercise) }}" class="btn" style="padding:4px 8px;font-size:11px;color:#A32D2D" onclick="return confirm('حذف الصورة؟')"><i class="ti ti-trash"></i></a>
                 </div>
