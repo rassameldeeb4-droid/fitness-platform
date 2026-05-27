@@ -53,6 +53,7 @@ $files = [
     'resources/views/admin/exercises/create.blade.php',
     'resources/views/admin/exercises/edit.blade.php',
     'tmp/fix_storage.php',
+    'tmp/showlog.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
