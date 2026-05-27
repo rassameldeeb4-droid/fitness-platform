@@ -124,10 +124,14 @@ class ExerciseController extends Controller
 
     public function deleteVideo(Exercise $exercise)
     {
-        if ($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete($exercise->video_url);
-            $exercise->update(['video_url' => null]);
+        try {
+            if ($exercise->video_url && !filter_var($exercise->video_url, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($exercise->video_url);
+                $exercise->update(['video_url' => null]);
+            }
+            return back()->with('success', 'تم حذف الفيديو');
+        } catch (\Exception $e) {
+            return back()->with('error', 'خطأ: ' . $e->getMessage());
         }
-        return back()->with('success', 'تم حذف الفيديو');
     }
 }

@@ -129,6 +129,16 @@ $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
 foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo "Removed: " . basename($f) . "\n"; }
 
+// Ensure storage symlink
+$target = __DIR__ . '/../storage/app/public';
+$link = __DIR__ . '/../public/storage';
+if (!file_exists($link) && is_dir($target)) {
+    symlink($target, $link);
+    echo "Storage symlink created\n";
+} elseif (!file_exists($link)) {
+    echo "Warning: storage/app/public not found\n";
+} else echo "Storage symlink exists\n";
+
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
 echo "\nDoctor: /doctor/appointments (إدارة المواعيد)";
