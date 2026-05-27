@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ExerciseController as AdminExerciseController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\Trainer\DashboardController as TrainerDashboardController;
 use App\Http\Controllers\Trainer\TraineeController as TrainerTraineeController;
 use App\Http\Controllers\Trainer\NutritionPlanController as TrainerNutritionPlanController;
@@ -85,6 +86,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+
+        Route::get('/doctors', [AdminDoctorController::class, 'index'])->name('doctors');
     });
 
     // Trainer Routes

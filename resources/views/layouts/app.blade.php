@@ -194,6 +194,7 @@ if ($role === 'admin' || $role === 'super_admin') {
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ $r('admin.dashboard') ? 'active-page' : '' }}"><i class="ti ti-layout-dashboard"></i> الرئيسية</a>
             <a href="{{ route('admin.members') }}" class="nav-item {{ $r('admin.members') ? 'active-page' : '' }}"><i class="ti ti-users"></i> المشتركون @if($memberCount)<span class="nav-badge nav-badge-green">{{ $memberCount }}</span>@endif</a>
             <a href="{{ route('admin.trainers') }}" class="nav-item {{ $r('admin.trainers') ? 'active-page' : '' }}"><i class="ti ti-user-star"></i> المدربون</a>
+            <a href="{{ route('admin.doctors') }}" class="nav-item {{ $r('admin.doctors') ? 'active-page' : '' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>
             <a href="{{ route('admin.gyms') }}" class="nav-item {{ $r('admin.gyms') ? 'active-page' : '' }}"><i class="ti ti-building"></i> الصالات</a>
             <a href="{{ route('admin.packages') }}" class="nav-item {{ $r('admin.packages') ? 'active-page' : '' }}"><i class="ti ti-credit-card"></i> الباقات @if($subCount)<span class="nav-badge nav-badge-green">{{ $subCount }}</span>@endif</a>
             <a href="{{ route('admin.revenue') }}" class="nav-item {{ $r('admin.revenue') ? 'active-page' : '' }}"><i class="ti ti-chart-bar"></i> الأرباح</a>
@@ -203,6 +204,7 @@ if ($role === 'admin' || $role === 'super_admin') {
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ $r('admin.dashboard') ? 'active-page' : '' }}"><i class="ti ti-layout-dashboard"></i> الرئيسية</a>
             <a href="{{ route('admin.members') }}" class="nav-item {{ $r('admin.members') ? 'active-page' : '' }}"><i class="ti ti-users"></i> المشتركون @if($memberCount)<span class="nav-badge nav-badge-green">{{ $memberCount }}</span>@endif</a>
             <a href="{{ route('admin.trainers') }}" class="nav-item {{ $r('admin.trainers') ? 'active-page' : '' }}"><i class="ti ti-user-star"></i> المدربون</a>
+            <a href="{{ route('admin.doctors') }}" class="nav-item {{ $r('admin.doctors') ? 'active-page' : '' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>
             <a href="{{ route('admin.gyms') }}" class="nav-item {{ $r('admin.gyms') ? 'active-page' : '' }}"><i class="ti ti-building"></i> الصالات</a>
             <a href="{{ route('admin.packages') }}" class="nav-item {{ $r('admin.packages') ? 'active-page' : '' }}"><i class="ti ti-credit-card"></i> الباقات @if($subCount)<span class="nav-badge nav-badge-green">{{ $subCount }}</span>@endif</a>
             <a href="{{ route('admin.revenue') }}" class="nav-item {{ $r('admin.revenue') ? 'active-page' : '' }}"><i class="ti ti-chart-bar"></i> الأرباح</a>
