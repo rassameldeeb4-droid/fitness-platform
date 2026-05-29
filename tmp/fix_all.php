@@ -140,18 +140,14 @@ $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
 foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo "Removed: " . basename($f) . "\n"; }
 
-// Ensure GEMINI_API_KEY in .env
+// Ensure GEMINI_API_KEY in .env (set via separate setkey.php)
 $envFile = __DIR__ . '/../.env';
 $envContent = file_exists($envFile) ? file_get_contents($envFile) : '';
-$newKey = 'AIzaSyDcVQO5RLkyXOkMPqdt2SlWotrtmFWcaTU';
-if (preg_match('/^GEMINI_API_KEY=.*$/m', $envContent)) {
-    $envContent = preg_replace('/^GEMINI_API_KEY=.*$/m', "GEMINI_API_KEY=$newKey", $envContent);
-    file_put_contents($envFile, $envContent);
-    echo "GEMINI_API_KEY updated in .env\n";
-} elseif (!str_contains($envContent, 'GEMINI_API_KEY=')) {
-    file_put_contents($envFile, $envContent . "\nGEMINI_API_KEY=$newKey\n");
-    echo "GEMINI_API_KEY added to .env\n";
-} else echo "GEMINI_API_KEY already in .env\n";
+if (!str_contains($envContent, 'GEMINI_API_KEY=')) {
+    echo "⚠️  GEMINI_API_KEY not set. Run tmp/setkey.php to add it.\n";
+} elseif (str_contains($envContent, 'GEMINI_API_KEY=') && !str_contains($envContent, 'GEMINI_API_KEY=AIzaSy')) {
+    echo "GEMINI_API_KEY present in .env\n";
+} else echo "GEMINI_API_KEY present in .env\n";
 
 // Ensure storage symlink
 $target = __DIR__ . '/../storage/app/public';

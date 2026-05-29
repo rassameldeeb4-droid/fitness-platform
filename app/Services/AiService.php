@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 class AiService
 {
     protected string $apiKey;
-    protected string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    protected string $model = 'gemini-2.0-flash';
+    protected string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
+    protected string $model = 'gemini-flash-latest';
 
     public function __construct()
     {
@@ -50,7 +50,7 @@ class AiService
     private function callGeminiApi(string $prompt, int $maxTokens = 1500): array
     {
         try {
-            $response = Http::post($this->apiUrl . '?key=' . $this->apiKey, [
+            $response = Http::withHeaders(['X-goog-api-key' => $this->apiKey])->post($this->apiUrl, [
                 'contents' => [
                     ['parts' => [['text' => $prompt]]]
                 ],
