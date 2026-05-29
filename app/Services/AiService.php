@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 class AiService
 {
     protected string $apiKey;
-    protected string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
-    protected string $model = 'gemini-flash-latest';
+    protected string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+    protected string $model = 'gemini-1.5-flash';
 
     public function __construct()
     {
@@ -70,8 +70,10 @@ class AiService
                         }
                     }
                 }
-                $clean = preg_replace('/```json|```|```JSON/', '', trim($text));
-                return json_decode($clean, true) ?? ['error' => 'Failed to parse AI response'];
+                $clean = trim($text);
+                $clean = preg_replace('/^.*?(\{)/s', '$1', $clean);
+                $clean = preg_replace('/\}[\s\S]*$/', '}', $clean);
+                return json_decode($clean, true) ?? ['error' => 'Failed to parse AI response', 'raw' => substr($text, 0, 500)];
             }
 
             Log::error('Gemini API error: ' . $response->body());
