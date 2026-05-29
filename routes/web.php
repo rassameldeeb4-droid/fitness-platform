@@ -37,6 +37,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\GymController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AiController;
+use App\Http\Controllers\NutritionSaveController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -196,6 +197,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate-workout', [App\Http\Controllers\AiController::class, 'generateWorkout'])->name('generate-workout');
         Route::post('/analyze-food', [App\Http\Controllers\AiController::class, 'analyzeFood'])->name('analyze-food');
     });
+
+    // Save AI-generated nutrition plan with meals
+    Route::post('/nutrition/save', [NutritionSaveController::class, 'store'])->name('nutrition.save');
 });
 
 require __DIR__.'/auth.php';

@@ -63,6 +63,10 @@ $files = [
     'app/Http/Controllers/FoodController.php',
     'app/Http/Controllers/Member/NutritionController.php',
     'resources/views/foods/analyze.blade.php',
+    'database/migrations/2026_05_29_000001_add_body_metrics_to_member_profiles.php',
+    'app/Http/Controllers/NutritionSaveController.php',
+    'app/Http/Controllers/AiController.php',
+    'resources/views/trainer/nutrition-create.blade.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
@@ -96,6 +100,17 @@ if (!Schema::hasTable('appointments')) {
         $t->foreign('member_id')->references('id')->on('users')->onDelete('cascade');
     });
     echo "created ✅\n";
+} else echo "exists ✅\n";
+
+// Add body metrics columns to member_profiles
+echo "\nBody metrics... ";
+if (!Schema::hasColumn('member_profiles', 'wrist_circumference')) {
+    Schema::table('member_profiles', function ($t) {
+        $t->decimal('wrist_circumference', 5, 2)->nullable()->after('target_weight');
+        $t->decimal('waist_circumference', 5, 2)->nullable()->after('wrist_circumference');
+        $t->string('job')->nullable()->after('complaints');
+    });
+    echo "added ✅\n";
 } else echo "exists ✅\n";
 
 // Fix app.blade.php sidebar links

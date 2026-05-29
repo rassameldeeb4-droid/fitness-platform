@@ -25,6 +25,9 @@ class AiController extends Controller
             'activity_level' => 'required|string',
             'body_fat' => 'nullable|numeric',
             'workout_days' => 'required|integer',
+            'wrist' => 'nullable|numeric',
+            'waist' => 'nullable|numeric',
+            'job' => 'nullable|string',
         ]);
 
         $result = $this->aiService->generateNutritionPlan($data);

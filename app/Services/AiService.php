@@ -18,13 +18,20 @@ class AiService
 
     public function generateNutritionPlan(array $data): array
     {
-        $prompt = "أنت خبير تغذية رياضي. أنشئ نظاماً غذائياً متكاملاً لـ:
-الاسم: {$data['name']}، العمر: {$data['age']}، الوزن: {$data['weight']}كغ، الطول: {$data['height']}سم، الهدف: {$data['goal']}، النشاط: {$data['activity_level']}، نسبة الدهون: {$data['body_fat']}%، أيام التمرين: {$data['workout_days']}.
-أجب بـ JSON فقط بهذا الشكل:
-{\"calories\":0,\"protein\":0,\"carbs\":0,\"fat\":0,\"meals\":[{\"name\":\"\",\"time\":\"\",\"items\":[\"\"],\"calories\":0}],\"alternatives\":[\"\"],\"notes\":\"\"}
-لا تضف أي نص خارج الـ JSON.";
+        $extra = '';
+        if (!empty($data['wrist'])) $extra .= "محيط الرصغ: {$data['wrist']}سم، ";
+        if (!empty($data['waist'])) $extra .= "محيط الوسط: {$data['waist']}سم، ";
+        if (!empty($data['job'])) $extra .= "الوظيفة: {$data['job']}، ";
+        if (!empty($data['activity_level'])) $extra .= "مستوى النشاط البدني: {$data['activity_level']}، ";
 
-        return $this->callOpenAiApi($prompt);
+        $prompt = "أنت خبير تغذية رياضي. أنشئ نظاماً غذائياً متكاملاً لـ:
+الاسم: {$data['name']}، العمر: {$data['age']}، الوزن: {$data['weight']}كغ، الطول: {$data['height']}سم، {$extra}الهدف: {$data['goal']}، نسبة الدهون: {$data['body_fat']}%، أيام التمرين: {$data['workout_days']}.
+
+أجب بـ JSON فقط بهذا الشكل (كل وجبة بكارت منفصل):
+{\"calories\":0,\"protein\":0,\"carbs\":0,\"fat\":0,\"fiber\":0,\"meals\":[{\"name\":\"\",\"time\":\"\",\"calories\":0,\"protein\":0,\"carbs\":0,\"fat\":0,\"items\":[\"100غ صدر دجاج\",\"50غ أرز\"],\"vitamins\":[{\"name\":\"فيتامين ب6\",\"amount\":\"0.5ملغ\",\"benefit\":\"للايض\"}],\"minerals\":[{\"name\":\"حديد\",\"amount\":\"2ملغ\",\"benefit\":\"للدم\"}]}],\"alternatives\":[\"\"],\"notes\":\"\",\"water\":\"2-3 لتر\"}
+لكل وجبة اذكر السعرات والبروتين والكارب والدهون بوضوح. لا تضف أي نص خارج الـ JSON.";
+
+        return $this->callOpenAiApi($prompt, 1000);
     }
 
     public function generateWorkoutPlan(array $data): array
