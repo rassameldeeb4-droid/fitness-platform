@@ -63,10 +63,16 @@ class AiService
             if ($response->successful()) {
                 $body = $response->json();
                 $text = $body['choices'][0]['message']['content'] ?? '';
-                $clean = trim($text);
-                $clean = preg_replace('/^.*?(\{)/s', '$1', $clean);
-                $clean = preg_replace('/\}[\s\S]*$/', '}', $clean);
-                return json_decode($clean, true) ?? ['error' => 'Failed to parse AI response', 'raw' => substr($text, 0, 500)];
+                $jsonStart = strpos($text, '{');
+                $jsonEnd = strrpos($text, '}');
+                $clean = '';
+                if ($jsonStart !== false && $jsonEnd !== false && $jsonEnd > $jsonStart) {
+                    $clean = substr($text, $jsonStart, $jsonEnd - $jsonStart + 1);
+                }
+                $decoded = json_decode($clean, true);
+                if ($decoded) return $decoded;
+                Log::error('OpenAI parse error', ['response' => $text]);
+                return ['error' => 'Failed to parse AI response', 'raw' => mb_substr($text, 0, 1000)];
             }
 
             Log::error('OpenAI API error: ' . $response->body());
