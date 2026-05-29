@@ -55,6 +55,8 @@ $files = [
     'app/Http/Controllers/Admin/ExerciseController.php',
     'tmp/fix_storage.php',
     'tmp/showlog.php',
+    'app/Services/AiService.php',
+    'config/services.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
@@ -134,6 +136,14 @@ echo $ch > 0 ? "updated ($ch changes)\n" : "already ok\n";
 $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
 foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo "Removed: " . basename($f) . "\n"; }
+
+// Ensure GEMINI_API_KEY in .env
+$envFile = __DIR__ . '/../.env';
+$envContent = file_exists($envFile) ? file_get_contents($envFile) : '';
+if (!str_contains($envContent, 'GEMINI_API_KEY=')) {
+    file_put_contents($envFile, $envContent . "\nGEMINI_API_KEY=AIzaSyBu3jItSvdZ9LbSvXXXH0kgQg6jUTFKTTI\n");
+    echo "GEMINI_API_KEY added to .env\n";
+} else echo "GEMINI_API_KEY already in .env\n";
 
 // Ensure storage symlink
 $target = __DIR__ . '/../storage/app/public';
