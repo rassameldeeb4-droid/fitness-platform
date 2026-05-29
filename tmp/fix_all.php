@@ -57,6 +57,7 @@ $files = [
     'tmp/showlog.php',
     'tmp/setkey.php',
     'tmp/addkey.php',
+    'tmp/opclear.php',
     'app/Services/AiService.php',
     'config/services.php',
     'app/Http/Controllers/FoodController.php',
