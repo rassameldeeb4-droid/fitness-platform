@@ -27,7 +27,7 @@ class NutritionController extends Controller
     public function analyzeFoodPost(Request $request, AiService $aiService)
     {
         $request->validate(['query' => 'required|string|max:500']);
-        $result = $aiService->analyzeFood($request->query);
+        $result = $aiService->analyzeFood($request->input('query'));
         return response()->json($result);
     }
 }
