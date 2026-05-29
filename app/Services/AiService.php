@@ -47,7 +47,7 @@ class AiService
         return $this->callGeminiApi($prompt);
     }
 
-    private function callGeminiApi(string $prompt, int $maxTokens = 1500): array
+    private function callGeminiApi(string $prompt, int $maxTokens = 500): array
     {
         try {
             $response = Http::withHeaders(['X-goog-api-key' => $this->apiKey])->post($this->apiUrl, [
@@ -77,7 +77,11 @@ class AiService
             }
 
             Log::error('Gemini API error: ' . $response->body());
-            return ['error' => 'API request failed: ' . $response->status()];
+            $status = $response->status();
+            if ($status === 429) {
+                return ['error' => 'حد الاستخدام تجاوز الحد المسموح. حاول بعد دقيقة أو استخدم مفتاح API جديد من https://aistudio.google.com/apikey'];
+            }
+            return ['error' => 'API request failed: ' . $status];
         } catch (\Exception $e) {
             Log::error('Gemini API exception: ' . $e->getMessage());
             return ['error' => 'Exception: ' . $e->getMessage()];
