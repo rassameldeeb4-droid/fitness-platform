@@ -58,6 +58,7 @@ $files = [
     'app/Services/AiService.php',
     'config/services.php',
     'app/Http/Controllers/FoodController.php',
+    'app/Http/Controllers/Member/NutritionController.php',
     'resources/views/foods/analyze.blade.php',
 ];
 $ok = 0; $fail = 0;
