@@ -143,8 +143,13 @@ foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo 
 // Ensure GEMINI_API_KEY in .env
 $envFile = __DIR__ . '/../.env';
 $envContent = file_exists($envFile) ? file_get_contents($envFile) : '';
-if (!str_contains($envContent, 'GEMINI_API_KEY=')) {
-    file_put_contents($envFile, $envContent . "\nGEMINI_API_KEY=AIzaSyBu3jItSvdZ9LbSvXXXH0kgQg6jUTFKTTI\n");
+$newKey = 'AIzaSyDcVQO5RLkyXOkMPqdt2SlWotrtmFWcaTU';
+if (preg_match('/^GEMINI_API_KEY=.*$/m', $envContent)) {
+    $envContent = preg_replace('/^GEMINI_API_KEY=.*$/m', "GEMINI_API_KEY=$newKey", $envContent);
+    file_put_contents($envFile, $envContent);
+    echo "GEMINI_API_KEY updated in .env\n";
+} elseif (!str_contains($envContent, 'GEMINI_API_KEY=')) {
+    file_put_contents($envFile, $envContent . "\nGEMINI_API_KEY=$newKey\n");
     echo "GEMINI_API_KEY added to .env\n";
 } else echo "GEMINI_API_KEY already in .env\n";
 
