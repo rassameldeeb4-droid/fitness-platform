@@ -57,6 +57,7 @@ $files = [
     'tmp/showlog.php',
     'app/Services/AiService.php',
     'config/services.php',
+    'resources/views/foods/analyze.blade.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
