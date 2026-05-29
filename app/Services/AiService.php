@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Log;
 class AiService
 {
     protected string $apiKey;
-    protected string $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-    protected string $model = 'gemini-1.5-flash';
+    protected string $apiUrl = 'https://api.openai.com/v1/chat/completions';
+    protected string $model = 'gpt-4o-mini';
 
     public function __construct()
     {
-        $this->apiKey = config('services.gemini.api_key', env('GEMINI_API_KEY', ''));
+        $this->apiKey = config('services.openai.api_key', env('OPENAI_API_KEY', ''));
     }
 
     public function generateNutritionPlan(array $data): array
@@ -24,7 +24,7 @@ class AiService
 {\"calories\":0,\"protein\":0,\"carbs\":0,\"fat\":0,\"meals\":[{\"name\":\"\",\"time\":\"\",\"items\":[\"\"],\"calories\":0}],\"alternatives\":[\"\"],\"notes\":\"\"}
 لا تضف أي نص خارج الـ JSON.";
 
-        return $this->callGeminiApi($prompt);
+        return $this->callOpenAiApi($prompt);
     }
 
     public function generateWorkoutPlan(array $data): array
@@ -35,7 +35,7 @@ class AiService
 {\"days\":[{\"day\":\"\",\"focus\":\"\",\"exercises\":[{\"name\":\"\",\"sets\":\"\",\"reps\":\"\",\"rest\":\"\"}]}],\"tips\":\"\"}
 لا تضف أي نص خارج الـ JSON.";
 
-        return $this->callGeminiApi($prompt);
+        return $this->callOpenAiApi($prompt);
     }
 
     public function analyzeFood(string $query): array
@@ -44,46 +44,39 @@ class AiService
 أجب بـ JSON فقط بهذا الشكل بدون أي نص خارجه:
 {\"food\":\"\",\"amount\":\"\",\"calories\":0,\"protein\":0,\"carbs\":0,\"fat\":0,\"fiber\":0,\"sugar\":0,\"sodium\":0,\"vitamins\":[{\"name\":\"\",\"amount\":\"\",\"benefit\":\"\"}],\"minerals\":[{\"name\":\"\",\"amount\":\"\",\"benefit\":\"\"}],\"tips\":\"\",\"category\":\"\",\"glycemic\":\"منخفض\"}";
 
-        return $this->callGeminiApi($prompt);
+        return $this->callOpenAiApi($prompt);
     }
 
-    private function callGeminiApi(string $prompt, int $maxTokens = 500): array
+    private function callOpenAiApi(string $prompt, int $maxTokens = 500): array
     {
         try {
-            $response = Http::withHeaders(['X-goog-api-key' => $this->apiKey])->post($this->apiUrl, [
-                'contents' => [
-                    ['parts' => [['text' => $prompt]]]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'maxOutputTokens' => $maxTokens,
-                ],
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])->post($this->apiUrl, [
+                'model' => $this->model,
+                'messages' => [['role' => 'user', 'content' => $prompt]],
+                'max_tokens' => $maxTokens,
+                'temperature' => 0.7,
             ]);
 
             if ($response->successful()) {
                 $body = $response->json();
-                $text = '';
-                if (isset($body['candidates'][0]['content']['parts'])) {
-                    foreach ($body['candidates'][0]['content']['parts'] as $part) {
-                        if (isset($part['text'])) {
-                            $text .= $part['text'];
-                        }
-                    }
-                }
+                $text = $body['choices'][0]['message']['content'] ?? '';
                 $clean = trim($text);
                 $clean = preg_replace('/^.*?(\{)/s', '$1', $clean);
                 $clean = preg_replace('/\}[\s\S]*$/', '}', $clean);
                 return json_decode($clean, true) ?? ['error' => 'Failed to parse AI response', 'raw' => substr($text, 0, 500)];
             }
 
-            Log::error('Gemini API error: ' . $response->body());
+            Log::error('OpenAI API error: ' . $response->body());
             $status = $response->status();
             if ($status === 429) {
-                return ['error' => 'حد الاستخدام تجاوز الحد المسموح. حاول بعد دقيقة أو استخدم مفتاح API جديد من https://aistudio.google.com/apikey'];
+                return ['error' => 'حد الاستخدام تجاوز الحد المسموح. حاول بعد دقيقة'];
             }
             return ['error' => 'API request failed: ' . $status];
         } catch (\Exception $e) {
-            Log::error('Gemini API exception: ' . $e->getMessage());
+            Log::error('OpenAI API exception: ' . $e->getMessage());
             return ['error' => 'Exception: ' . $e->getMessage()];
         }
     }

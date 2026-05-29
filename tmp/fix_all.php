@@ -141,14 +141,12 @@ $cache = __DIR__ . '/../storage/framework/views';
 if (is_dir($cache)) { array_map('unlink', glob($cache . '/*')); echo "View cache cleared\n"; }
 foreach (glob(__DIR__ . '/../bootstrap/cache/*.php') as $f) { @unlink($f); echo "Removed: " . basename($f) . "\n"; }
 
-// Ensure GEMINI_API_KEY in .env (set via separate setkey.php)
+// Ensure OPENAI_API_KEY in .env
 $envFile = __DIR__ . '/../.env';
 $envContent = file_exists($envFile) ? file_get_contents($envFile) : '';
-if (!str_contains($envContent, 'GEMINI_API_KEY=')) {
-    echo "⚠️  GEMINI_API_KEY not set. Run tmp/setkey.php to add it.\n";
-} elseif (str_contains($envContent, 'GEMINI_API_KEY=') && !str_contains($envContent, 'GEMINI_API_KEY=AIzaSy')) {
-    echo "GEMINI_API_KEY present in .env\n";
-} else echo "GEMINI_API_KEY present in .env\n";
+if (!str_contains($envContent, 'OPENAI_API_KEY=')) {
+    echo "⚠️  OPENAI_API_KEY not set. Set it manually in .env\n";
+} else echo "OPENAI_API_KEY present in .env\n";
 
 // Ensure storage symlink
 $target = __DIR__ . '/../storage/app/public';
