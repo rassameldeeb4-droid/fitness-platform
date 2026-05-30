@@ -64,6 +64,7 @@ $files = [
     'app/Http/Controllers/FoodController.php',
     'app/Http/Controllers/Member/NutritionController.php',
     'resources/views/foods/analyze.blade.php',
+    'resources/views/member/nutrition.blade.php',
     'database/migrations/2026_05_29_000001_add_body_metrics_to_member_profiles.php',
     'app/Http/Controllers/NutritionSaveController.php',
     'app/Http/Controllers/AiController.php',
