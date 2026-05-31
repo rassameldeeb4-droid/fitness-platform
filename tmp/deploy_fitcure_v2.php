@@ -1,34 +1,43 @@
 <?php
-// Write test PHP files and immediately try to access them
+// Clean deploy approach: write files and check via HTTP
 
-$unique = time();
+$paths = [
+    '/home/busnisscard/public_html/fitcure.online',
+    '/home/busnisscard/fitcure.online',
+];
 
-// Test 1: Write to /home/busnisscard/public_html/fitcure.online/
-$path1 = '/home/busnisscard/public_html/fitcure.online';
-@mkdir($path1, 0755, true);
-$testFile1 = "$path1/fitcure_test_$unique.php";
-file_put_contents($testFile1, '<?php echo "OK1:' . $unique . '";');
-$testHtml1 = "$path1/fitcure_test_$unique.html";
-file_put_contents($testHtml1, "OK1-html:$unique");
+$unique = '_' . time();
 
-// Test 2: Write to /home/busnisscard/fitcure.online/
-$path2 = '/home/busnisscard/fitcure.online';
-@mkdir($path2, 0755, true);
-$testFile2 = "$path2/fitcure_test_$unique.php";
-file_put_contents($testFile2, '<?php echo "OK2:' . $unique . '";');
-$testHtml2 = "$path2/fitcure_test_$unique.html";
-file_put_contents($testHtml2, "OK2-html:$unique");
+// Write test files to all candidate paths
+foreach ($paths as $base) {
+    @mkdir($base, 0755, true);
+    file_put_contents("$base/fc_test$unique.php", '<?php echo "FROM:' . $base . '";');
+    file_put_contents("$base/fc_test$unique.html", "html:$base");
+}
 
-// Test 3: Write to /home/busnisscard/public_html/ (main domain root)
-$path3 = '/home/busnisscard/public_html';
-$testFile3 = "$path3/fitcure_test_$unique.php";
-file_put_contents($testFile3, '<?php echo "OK3:' . $unique . '";');
-$testHtml3 = "$path3/fitcure_test_$unique.html";
-file_put_contents($testHtml3, "OK3-html:$unique");
+echo "Test ID: $unique\n\n";
 
-echo "Test files created with ID: $unique\n";
-echo "Run these URLs in your browser:\n\n";
-echo "  https://fitcure.online/fitcure_test_$unique.php\n";
-echo "  https://fitcure.online/fitcure_test_$unique.html\n";
-echo "  https://busnisscard.com/fitcure_test_$unique.php\n";
-echo "  https://busnisscard.com/fitcure_test_$unique.html\n";
+// Now try to access via HTTP
+echo "HTTP Test Results:\n";
+$urls = [
+    "https://fitcure.online/fc_test$unique.php",
+    "https://fitcure.online/fc_test$unique.html",
+    "https://busnisscard.com/fc_test$unique.php",
+];
+foreach ($urls as $url) {
+    $ctx = stream_context_create(['http' => ['timeout' => 5]]);
+    $content = @file_get_contents($url, false, $ctx);
+    $httpCode = $http_response_header ? (int)explode(' ', $http_response_header[0])[1] : 0;
+    echo "  [$httpCode] $url\n";
+    if ($content) {
+        echo "    -> $content\n";
+    }
+}
+
+// Clean up test files
+foreach ($paths as $base) {
+    @unlink("$base/fc_test$unique.php");
+    @unlink("$base/fc_test$unique.html");
+}
+
+echo "\n=== Next step: decide which path ===\n";
