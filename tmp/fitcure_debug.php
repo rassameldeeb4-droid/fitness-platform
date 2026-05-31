@@ -45,8 +45,8 @@ try {
     $response = $kernel->handle($request);
     echo "OK (" . get_class($response) . ")\n";
     
-    echo "6. Content (first 200): " . substr($response->getContent(), 0, 200) . "\n";
-    echo "7. Status: " . $response->getStatusCode() . "\n";
+    echo "6. Status: " . $response->getStatusCode() . "\n";
+    echo "7. Full response:\n" . $response->getContent() . "\n";
     
     echo "\n=== BOOT OK ===\n";
 } catch (\Throwable $e) {
