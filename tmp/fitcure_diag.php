@@ -82,6 +82,29 @@ echo "10. Storage writable: " . (file_exists($testFile) ? "OK" : "NO") . "\n";
 
 // 11. Check APP_DEBUG
 echo "11. APP_DEBUG: " . (str_contains($env, 'APP_DEBUG=true') ? "true" : "false") . "\n";
+if (str_contains($env, 'APP_DEBUG=false')) {
+    $env = str_replace('APP_DEBUG=false', 'APP_DEBUG=true', $env);
+    file_put_contents("$target/.env", $env);
+    echo "   -> Enabled APP_DEBUG\n";
+}
+
+// 13. Check Laravel log
+$logFile = "$target/storage/logs/laravel.log";
+if (file_exists($logFile)) {
+    $logContent = file_get_contents($logFile);
+    if (trim($logContent)) {
+        $lines = explode("\n", $logContent);
+        $lastLines = array_slice($lines, -20);
+        echo "\n13. Laravel log (last 20 lines):\n";
+        foreach ($lastLines as $l) {
+            if (trim($l)) echo "   " . substr($l, 0, 300) . "\n";
+        }
+    } else {
+        echo "\n13. Laravel log: empty\n";
+    }
+} else {
+    echo "\n13. Laravel log: not found\n";
+}
 
 // 12. Check if public/index.php works standalone
 echo "\n12. public/index.php header test:\n";
