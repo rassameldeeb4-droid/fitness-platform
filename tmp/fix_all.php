@@ -275,6 +275,34 @@ if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("
     echo "$copied files\n";
 }
 
+// Ensure .htaccess exists (not in GitHub repo, so create it)
+$htaccessContent = '<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+    RewriteBase /fitcure/public/
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>';
+if (!file_exists($fitcureHtaccess) || filesize($fitcureHtaccess) < 50) {
+    file_put_contents($fitcureHtaccess, $htaccessContent);
+    echo "  .htaccess created\n";
+}
+
 // Verify key files
 echo "  vendor/composer/autoload_real.php: " . (file_exists("$fitcureTarget/vendor/composer/autoload_real.php") ? "OK" : "MISSING") . "\n";
 echo "  vendor/autoload.php: " . (file_exists("$fitcureTarget/vendor/autoload.php") ? "OK" : "MISSING") . "\n";
