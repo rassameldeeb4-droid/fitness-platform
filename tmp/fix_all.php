@@ -305,6 +305,22 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
+// Use shell cp to reliably copy vendor (bypasses PHP recursion limits)
+$srcVendor = dirname(__DIR__) . '/vendor';
+$dstVendor = "$fitcureTarget/vendor";
+
+// Check if a critical missing file exists
+$testFile = 'symfony/polyfill-mbstring/bootstrap.php';
+if (!file_exists("$dstVendor/$testFile")) {
+    echo "  Using cp to copy vendor...\n";
+    $output = shell_exec("cp -r '$srcVendor/.' '$dstVendor/' 2>&1");
+    echo "  cp result: " . ($output ?: "done") . "\n";
+    // Verify
+    if (file_exists("$dstVendor/$testFile")) echo "  $testFile now OK\n";
+} else {
+    echo "  $testFile already present\n";
+}
+
 // Deep diagnostic: try requiring autoload with error reporting
 $diagCode = '<?php
 error_reporting(E_ALL);
@@ -317,23 +333,7 @@ try {
 }
 ';
 file_put_contents("$fitcureTarget/public/fc_s1.php", $diagCode);
-
-// Check if vendor autoload has proper content
-$vendorAutoload = file_get_contents("$fitcureTarget/vendor/autoload.php");
-echo "  vendor/autoload.php: " . strlen($vendorAutoload) . " bytes\n";
-if ($vendorAutoload) echo "  autoload.php first line: " . explode("\n", $vendorAutoload)[0] . "\n";
-
-// Check if autoload_real.php exists
-$realExists = file_exists("$fitcureTarget/vendor/composer/autoload_real.php");
-echo "  vendor/composer/autoload_real.php: " . ($realExists ? "OK" : "MISSING") . "\n";
-if ($realExists) {
-    $realContent = file_get_contents("$fitcureTarget/vendor/composer/autoload_real.php");
-    echo "  autoload_real.php: " . strlen($realContent) . " bytes\n";
-    // Check for the getLoader function
-    echo "  has getLoader(): " . (str_contains($realContent, 'getLoader') ? "YES" : "NO") . "\n";
-}
-
-echo "  Bootstrap test files created\n";
+echo "  Diagnostic file created\n";
 
 // Ensure .htaccess exists (not in GitHub repo, so create it)
 $htaccessContent = '<IfModule mod_rewrite.c>
