@@ -225,6 +225,14 @@ if (function_exists('opcache_reset')) {
 
 // Also fix fitcure subdirectory
 echo "\n=== Fitcure subdirectory check ===\n";
+
+// Fix APP_URL in .env
+$fitcureEnvContent = @file_get_contents($fitcureEnv);
+if ($fitcureEnvContent) {
+    $fitcureEnvContent = preg_replace('/^APP_URL=.*$/m', 'APP_URL=https://busnisscard.com/fitcure/public', $fitcureEnvContent);
+    file_put_contents($fitcureEnv, $fitcureEnvContent);
+    echo "  APP_URL fixed\n";
+}
 $fitcureTarget = '/home/busnisscard/public_html/fitcure';
 $fitcureEnv = "$fitcureTarget/.env";
 $fitcureHtaccess = "$fitcureTarget/public/.htaccess";
@@ -305,20 +313,26 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
-// Use shell cp to reliably copy vendor (bypasses PHP recursion limits)
-$srcVendor = dirname(__DIR__) . '/vendor';
-$dstVendor = "$fitcureTarget/vendor";
-
-// Check if a critical missing file exists
-$testFile = 'symfony/polyfill-mbstring/bootstrap.php';
-if (!file_exists("$dstVendor/$testFile")) {
-    echo "  Using cp to copy vendor...\n";
-    $output = shell_exec("cp -r '$srcVendor/.' '$dstVendor/' 2>&1");
-    echo "  cp result: " . ($output ?: "done") . "\n";
-    // Verify
-    if (file_exists("$dstVendor/$testFile")) echo "  $testFile now OK\n";
-} else {
-    echo "  $testFile already present\n";
+// Check if Laravel boots now
+echo "  Testing Laravel bootstrap...\n";
+$ctx = stream_context_create(['http' => ['timeout' => 5]]);
+@file_get_contents("https://busnisscard.com/fitcure/public/", false, $ctx);
+sleep(1); // Wait for error log to be written
+$fcPhpLog = "$fitcureTarget/error_log";
+if (file_exists($fcPhpLog) && filesize($fcPhpLog) > 0) {
+    $lines = file($fcPhpLog);
+    $last = array_slice($lines, -8);
+    echo "  PHP error_log (last 8):\n";
+    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 500) . "\n"; }
+    @file_put_contents("$fitcureTarget/error_log", '');
+}
+$fcLaravelLog = "$fitcureTarget/storage/logs/laravel.log";
+if (file_exists($fcLaravelLog) && filesize($fcLaravelLog) > 0) {
+    $lines = file($fcLaravelLog);
+    $last = array_slice($lines, -8);
+    echo "  Laravel log (last 8):\n";
+    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 500) . "\n"; }
+    @file_put_contents($fcLaravelLog, '');
 }
 
 // Deep diagnostic: try requiring autoload with error reporting
