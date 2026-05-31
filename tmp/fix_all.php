@@ -345,17 +345,15 @@ sleep(1);
 $fcPhpLog = "$fitcureTarget/error_log";
 if (file_exists($fcPhpLog) && filesize($fcPhpLog) > 0) {
     $lines = file($fcPhpLog);
-    $last = array_slice($lines, -8);
-    echo "  PHP error_log (last 8):\n";
-    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 500) . "\n"; }
+echo "  PHP error_log (" . count($lines) . " lines):\n";
+    foreach (array_slice($lines, -20) as $l) { if (trim($l)) echo "    " . substr($l, 0, 300) . "\n"; }
     @file_put_contents("$fitcureTarget/error_log", '');
 }
 $fcLaravelLog = "$fitcureTarget/storage/logs/laravel.log";
 if (file_exists($fcLaravelLog) && filesize($fcLaravelLog) > 0) {
     $lines = file($fcLaravelLog);
-    $last = array_slice($lines, -8);
-    echo "  Laravel log (last 8):\n";
-    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 500) . "\n"; }
+    echo "  Laravel log (" . count($lines) . " lines):\n";
+    foreach (array_slice($lines, -20) as $l) { if (trim($l)) echo "    " . substr($l, 0, 300) . "\n"; }
     @file_put_contents($fcLaravelLog, '');
 }
 
