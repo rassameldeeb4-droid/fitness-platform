@@ -83,6 +83,7 @@ $files = [
     'tmp/fitcure_http_test.php',
     'tmp/fitcure_diag.php',
     'tmp/fitcure_debug.php',
+    'composer.json',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
@@ -309,6 +310,15 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
         $fcHt = "$handlerLine\n" . $fcHt;
         file_put_contents("$fitcureTarget/public/.htaccess", $fcHt);
         echo "  Added PHP handler to fitcure .htaccess\n";
+    }
+}
+
+// Download composer.json to fitcure if missing (required by Laravel)
+if (!file_exists("$fitcureTarget/composer.json")) {
+    $cj = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/composer.json');
+    if ($cj) {
+        file_put_contents("$fitcureTarget/composer.json", $cj);
+        echo "  composer.json downloaded\n";
     }
 }
 
