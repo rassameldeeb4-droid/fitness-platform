@@ -18,6 +18,19 @@ $target = '/home/busnisscard/public_html/fitcure';
 
 echo "=== Fixing fitcure subdirectory ===\n\n";
 
+// 0. Download composer.json (required by Laravel but not in deploy list)
+if (!file_exists("$target/composer.json")) {
+    $cj = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/composer.json');
+    if ($cj) {
+        file_put_contents("$target/composer.json", $cj);
+        echo "0. composer.json downloaded\n";
+    } else {
+        echo "0. composer.json DOWNLOAD FAILED\n";
+    }
+} else {
+    echo "0. composer.json exists\n";
+}
+
 // 1. Set APP_KEY + APP_DEBUG
 $envFile = "$target/.env";
 $envContent = file_get_contents($envFile);
@@ -126,6 +139,26 @@ echo "   " . ($envOut ?: "failed") . "\n";
 $env = file_get_contents("$target/.env");
 preg_match('/APP_URL=(.+)/', $env, $m);
 echo "   APP_URL: " . ($m[1] ?? 'NOT SET') . "\n";
+
+// 7f. Direct HTTP test
+echo "\n7f. Direct HTTP test:\n";
+$ch = curl_init('https://busnisscard.com/fitcure/public/');
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10,
+    CURLOPT_HEADER => true, CURLOPT_NOBODY => false,
+]);
+$body = curl_exec($ch);
+$info = curl_getinfo($ch);
+$err = curl_error($ch);
+curl_close($ch);
+echo "   HTTP " . $info['http_code'] . "\n";
+if ($info['http_code'] == 200) {
+    echo "   Content (first 200): " . substr($body, 0, 200) . "\n";
+} else {
+    echo "   Headers: " . substr($body, 0, $info['header_size']) . "\n";
+    echo "   Body (first 200): " . substr($body, $info['header_size'], 200) . "\n";
+}
+if ($err) echo "   curl error: $err\n";
 
 echo "\n=== Done ===\n";
 echo "Try: https://busnisscard.com/fitcure/public/\n";
