@@ -206,6 +206,12 @@ if (!file_exists($link) && is_dir($target)) {
     echo "Warning: storage/app/public not found\n";
 } else echo "Storage symlink exists\n";
 
+// Clear opcache so updated files are fresh
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+    echo "Opcache cleared\n";
+}
+
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
 echo "\nDoctor: /doctor/appointments (إدارة المواعيد)";
