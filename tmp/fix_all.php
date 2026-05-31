@@ -82,6 +82,7 @@ $files = [
     'tmp/deploy_fitcure_v2.php',
     'tmp/fitcure_http_test.php',
     'tmp/fitcure_diag.php',
+    'tmp/fitcure_debug.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
