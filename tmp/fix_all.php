@@ -358,12 +358,22 @@ if (file_exists($fcLaravelLog) && filesize($fcLaravelLog) > 0) {
 }
 
 // Deep diagnostic: try requiring autoload with error reporting
+// Deep diagnostic: load Laravel app with error capture
 $diagCode = '<?php
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
+define("LARAVEL_START", microtime(true));
 try {
     $r = require __DIR__ . "/../vendor/autoload.php";
-    echo "AUTOLOAD_OK";
+    $app = require_once __DIR__ . "/../bootstrap/app.php";
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    try {
+        $request = Illuminate\Http\Request::capture();
+        $response = $kernel->handle($request);
+        echo "BOOT_OK|" . get_class($response);
+    } catch (\Throwable $e) {
+        echo "KERNEL_ERROR:" . get_class($e) . ":" . $e->getMessage() . "|FILE:" . $e->getFile() . "|LINE:" . $e->getLine() . "|TRACE:" . substr($e->getTraceAsString(), 0, 500);
+    }
 } catch (\Throwable $e) {
     echo "ERROR:" . $e->getMessage() . "|FILE:" . $e->getFile() . "|LINE:" . $e->getLine();
 }
