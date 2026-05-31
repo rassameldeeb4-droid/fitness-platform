@@ -260,7 +260,7 @@ if ($fitcureHtContent && !str_contains($fitcureHtContent, 'RewriteBase')) {
 }
 
 // Fix vendor/composer directory (missing autoload_real.php)
-$vendorComposerSrc = "$base/platform/vendor/composer";
+$vendorComposerSrc = dirname(__DIR__) . '/vendor/composer';
 $vendorComposerDst = "$fitcureTarget/vendor/composer";
 if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("$vendorComposerDst/autoload_real.php"))) {
     echo "  Copying vendor/composer... ";
