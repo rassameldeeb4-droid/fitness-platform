@@ -1,51 +1,12 @@
 <?php
-// Deploy FitCore to fitcure.online (same cPanel account)
-// This script determines the fitcure.online path and creates the platform
+// Deploy FitCore to busnisscard.com/fitcure/ subdirectory
+echo "=== Deploying to /fitcure/ subdirectory ===\n\n";
 
-$busnisscardRoot = __DIR__; // /home/busnisscard/public_html/platform/tmp
-$basePath = dirname(dirname($busnisscardRoot)); // /home/busnisscard/public_html
+$base = '/home/busnisscard/public_html';
+$target = "$base/fitcure";
+$appUrl = 'https://busnisscard.com/fitcure/public';
 
-$possiblePaths = [
-    $basePath . '/fitcure.online',
-    dirname($basePath) . '/fitcure.online',
-];
-
-$fitcurePath = null;
-foreach ($possiblePaths as $p) {
-    if (is_dir($p) || @mkdir($p, 0755, true)) {
-        $fitcurePath = $p;
-        break;
-    }
-}
-
-if (!$fitcurePath) {
-    die("Cannot find or create fitcure.online directory\n");
-}
-
-echo "Target: $fitcurePath\n";
-
-// Step 1: Create directory structure
-$dirs = ['app', 'bootstrap', 'config', 'database', 'public', 'resources', 'routes', 'storage', 'tmp', 'vendor'];
-foreach ($dirs as $d) {
-    $full = "$fitcurePath/$d";
-    if (!is_dir($full)) @mkdir($full, 0755, true);
-}
-
-// Step 2: Copy essential files from current platform
-$files = [
-    '.env.example', 'artisan', 'composer.json', 'composer.lock',
-];
-
-foreach ($files as $f) {
-    $src = "$basePath/platform/$f";
-    $dst = "$fitcurePath/$f";
-    if (file_exists($src) && !file_exists($dst)) {
-        copy($src, $dst);
-        echo "  Copied $f\n";
-    }
-}
-
-// Step 3: Download all platform files from GitHub
+// Step 1: Download all platform files
 $githubFiles = [
     'app/Http/Controllers/Controller.php',
     'app/Http/Kernel.php',
@@ -132,32 +93,51 @@ $githubFiles = [
     'config/services.php',
     'public/.htaccess',
     'public/index.php',
-    'public/favicon.ico',
 ];
 
-echo "\nDownloading files from GitHub...\n";
+echo "Downloading files from GitHub...\n";
 $ok = 0; $fail = 0;
 foreach ($githubFiles as $f) {
-    $local = "$fitcurePath/$f";
+    $local = "$target/$f";
     $dir = dirname($local);
     if (!is_dir($dir)) @mkdir($dir, 0755, true);
     $content = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/' . $f);
     if ($content) {
         file_put_contents($local, $content);
-        echo "  ✅ $f\n"; $ok++;
+        echo "  ? $f\n"; $ok++;
     } else {
-        echo "  ❌ $f\n"; $fail++;
+        echo "  ? $f\n"; $fail++;
     }
 }
-
 echo "\n$ok files downloaded, $fail failed\n";
 
-// Step 4: Create .env
-$envContent = "APP_NAME=\"FitCure Online\"
+// Step 2: Copy vendor from platform
+echo "\nCopying vendor...\n";
+$srcVendor = "$base/platform/vendor";
+$dstVendor = "$target/vendor";
+$vendorOk = 0;
+if (is_dir($srcVendor)) {
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($srcVendor, RecursiveDirectoryIterator::SKIP_DOTS));
+    foreach ($it as $f) {
+        $dest = $dstVendor . '/' . $it->getSubPathname();
+        if ($f->isDir()) {
+            @mkdir($dest, 0755, true);
+        } else {
+            @copy($f, $dest);
+            $vendorOk++;
+        }
+    }
+    echo "Vendor: copied $vendorOk files\n";
+} else {
+    echo "Vendor source not found!\n";
+}
+
+// Step 3: Create .env
+$envContent = "APP_NAME=\"FitCure\"
 APP_ENV=local
-APP_DEBUG=true
+APP_DEBUG=false
 APP_KEY=
-APP_URL=https://fitcure.online
+APP_URL=$appUrl
 
 DB_CONNECTION=mysql
 DB_HOST=localhost
@@ -169,28 +149,54 @@ DB_PASSWORD=')@h{Mb\$=+C2zc8Bl'
 OPENAI_API_KEY=
 ";
 
-file_put_contents("$fitcurePath/.env", $envContent);
-echo "\n.env created\n";
+file_put_contents("$target/.env", $envContent);
+echo ".env created\n";
 
-// Step 5: Generate APP_KEY
-chdir($fitcurePath);
+// Step 4: Generate APP_KEY
+chdir($target);
 $output = shell_exec('php artisan key:generate 2>&1');
 echo "Key generate: " . ($output ?: "done\n");
 
-// Step 6: Storage link
-if (!file_exists("$fitcurePath/public/storage")) {
-    $target = "$fitcurePath/storage/app/public";
-    $link = "$fitcurePath/public/storage";
-    if (is_dir($target)) {
-        @symlink($target, $link);
-        echo "Storage symlink created\n";
-    }
+// Step 5: Create storage structure
+echo "\nStorage setup...\n";
+foreach (['app/public', 'framework/cache', 'framework/sessions', 'framework/views', 'logs'] as $d) {
+    @mkdir("$target/storage/$d", 0755, true);
 }
 
-// Step 7: Create tmp scripts
-$opclear = '<?php require __DIR__ . "/../vendor/autoload.php"; $app = require __DIR__ . "/../bootstrap/app.php"; $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); if (function_exists("opcache_reset")) { opcache_reset(); echo "Opcache cleared\n"; } $ai = file_get_contents(__DIR__ . "/../app/Services/AiService.php"); echo str_contains($ai, "openai") ? "AiService: OpenAI OK\n" : "AiService: check\n";';
-file_put_contents("$fitcurePath/tmp/opclear.php", $opclear);
+// Step 6: Storage link
+if (!file_exists("$target/public/storage")) {
+    @symlink("$target/storage/app/public", "$target/public/storage");
+}
 
-echo "\n=== ✅ FitCure Online deployed! ===\n";
-echo "URL: https://fitcure.online\n";
-echo "Admin: https://fitcure.online/admin/dashboard\n";
+// Step 7: Create bootstrap cache
+@mkdir("$target/bootstrap/cache", 0755, true);
+
+// Step 8: Fix .htaccess for subdirectory
+$htaccess = "$target/public/.htaccess";
+$c = file_get_contents($htaccess);
+if ($c && strpos($c, 'RewriteBase') === false) {
+    $c = str_replace(
+        '<IfModule mod_rewrite.c>',
+        "<IfModule mod_rewrite.c>\n    RewriteBase /fitcure/public/",
+        $c
+    );
+    file_put_contents($htaccess, $c);
+    echo ".htaccess updated with RewriteBase\n";
+}
+
+// Step 9: Set directory permissions
+@chmod("$target/storage", 0755);
+@chmod("$target/bootstrap/cache", 0755);
+
+// Step 10: Create tmp scripts
+$opclear = '<?php require __DIR__ . "/../vendor/autoload.php"; $app = require __DIR__ . "/../bootstrap/app.php"; $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); if (function_exists("opcache_reset")) { opcache_reset(); echo "Opcache cleared\n"; }';
+file_put_contents("$target/tmp/opclear.php", $opclear);
+
+// Step 11: Clear view cache
+$viewsCache = "$target/storage/framework/views";
+if (is_dir($viewsCache)) { array_map('unlink', glob("$viewsCache/*")); }
+
+echo "\n=== FitCure deployed to subdirectory ===\n";
+echo "URL: $appUrl\n";
+echo "Login: same users/passwords as main platform\n";
+echo "\nImportant: Run this script again after deploying?\n";
