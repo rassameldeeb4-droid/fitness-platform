@@ -275,16 +275,15 @@ if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("
     echo "$copied files\n";
 }
 
-// Check error_log
-$fitcurePhpLog = "$fitcureTarget/error_log";
-if (file_exists($fitcurePhpLog) && filesize($fitcurePhpLog) > 0) {
-    $logLines = file($fitcurePhpLog);
-    $last = array_slice($logLines, -5);
-    echo "  PHP error_log (last 5):\n";
-    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 400) . "\n"; }
-} else {
-    echo "  No PHP error_log found\n";
-}
+// Verify key files
+echo "  vendor/composer/autoload_real.php: " . (file_exists("$fitcureTarget/vendor/composer/autoload_real.php") ? "OK" : "MISSING") . "\n";
+echo "  vendor/autoload.php: " . (file_exists("$fitcureTarget/vendor/autoload.php") ? "OK" : "MISSING") . "\n";
+echo "  bootstrap/app.php: " . (file_exists("$fitcureTarget/bootstrap/app.php") ? "OK" : "MISSING") . "\n";
+
+// Clear error log for fresh test
+@file_put_contents("$fitcureTarget/error_log", '');
+@file_put_contents("$fitcureTarget/storage/logs/laravel.log", '');
+echo "  Logs cleared\n";
 
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
