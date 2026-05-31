@@ -77,6 +77,7 @@ $files = [
     'routes/web.php',
     'tmp/deploy_fitcure.php',
     'tmp/fix_fitcure.php',
+    'tmp/find_fitcure_root.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
