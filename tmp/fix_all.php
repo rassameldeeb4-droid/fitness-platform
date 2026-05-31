@@ -211,7 +211,16 @@ if (!file_exists($link) && is_dir($target)) {
 // Clear opcache so updated files are fresh
 if (function_exists('opcache_reset')) {
     opcache_reset();
-    echo "Opcache cleared\n";
+    // Also invalidate each downloaded file
+    if (function_exists('opcache_invalidate')) {
+        foreach ($files as $f) {
+            $local = __DIR__ . '/../' . $f;
+            if (file_exists($local)) {
+                opcache_invalidate($local, true);
+            }
+        }
+    }
+    echo "Opcache cleared + files invalidated\n";
 }
 
 echo "\n=== ✅ Done! ===";
