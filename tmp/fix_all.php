@@ -47,6 +47,7 @@ $files = [
     'resources/views/doctor/dashboard.blade.php',
     'database/migrations/2026_05_27_000001_create_appointments_table.php',
     'routes/web.php',
+    'routes/auth.php',
     'app/Http/Controllers/Admin/TrainerController.php',
     'resources/views/admin/trainer-create.blade.php',
     'resources/views/admin/trainer-edit.blade.php',
@@ -313,12 +314,17 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
     }
 }
 
-// Download composer.json to fitcure if missing (required by Laravel)
-if (!file_exists("$fitcureTarget/composer.json")) {
-    $cj = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/composer.json');
-    if ($cj) {
-        file_put_contents("$fitcureTarget/composer.json", $cj);
-        echo "  composer.json downloaded\n";
+// Download missing vendor files to fitcure
+$missingFiles = ['composer.json', 'routes/auth.php'];
+foreach ($missingFiles as $mf) {
+    if (!file_exists("$fitcureTarget/$mf")) {
+        $content = @file_get_contents('https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/' . $mf);
+        if ($content) {
+            $targetFile = "$fitcureTarget/$mf";
+            @mkdir(dirname($targetFile), 0755, true);
+            file_put_contents($targetFile, $content);
+            echo "  $mf downloaded\n";
+        }
     }
 }
 
