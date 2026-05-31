@@ -12,6 +12,20 @@ if (preg_match('/APP_KEY=(.+)/', $env, $m)) {
     if (!str_contains($m[1], 'base64:')) echo "   WARNING: Key missing base64: prefix!\n";
 } else echo "MISSING!\n";
 
+// 1b. Existing files in target root
+echo "   Root files: " . implode(', ', array_diff(scandir($target), ['.', '..'])) . "\n";
+echo "   Vendor exists: " . (is_dir("$target/vendor") ? "DIR" : "NO") . "\n";
+if (is_dir("$target/vendor")) {
+    $vFiles = scandir("$target/vendor");
+    echo "   Vendor entries: " . implode(', ', array_slice($vFiles, 0, 20)) . "...\n";
+    echo "   vendor/autoload.php: " . (file_exists("$target/vendor/autoload.php") ? "OK" : "MISSING") . "\n";
+}
+// Check bootstrap
+echo "   Bootstrap dir: " . (is_dir("$target/bootstrap") ? "DIR" : "NO") . "\n";
+if (is_dir("$target/bootstrap")) {
+    echo "   Bootstrap files: " . implode(', ', array_diff(scandir("$target/bootstrap"), ['.', '..'])) . "\n";
+}
+
 // 2. Check .htaccess
 $ht = file_get_contents("$target/public/.htaccess");
 echo "2. .htaccess RewriteBase: " . (str_contains($ht, 'RewriteBase') ? "present\n" : "MISSING\n");

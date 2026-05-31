@@ -9,7 +9,10 @@ $appUrl = 'https://busnisscard.com/fitcure/public';
 // Step 1: Download all platform files
 $githubFiles = [
     'app/Http/Controllers/Controller.php',
+    'artisan',
     'app/Http/Kernel.php',
+    'bootstrap/app.php',
+    'vendor/autoload.php',
     'app/Models/User.php',
     'app/Models/MemberProfile.php',
     'app/Models/TrainerProfile.php',
