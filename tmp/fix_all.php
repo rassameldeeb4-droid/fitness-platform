@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Schema;
 // Download & create ALL missing files from GitHub
 echo "Downloading missing files...\n";
 $files = [
+    'composer.json',
     'app/Http/Controllers/Admin/DoctorController.php',
     'app/Http/Controllers/Doctor/AppointmentController.php',
     'app/Http/Controllers/Member/AppointmentController.php',
@@ -83,7 +84,6 @@ $files = [
     'tmp/fitcure_http_test.php',
     'tmp/fitcure_diag.php',
     'tmp/fitcure_debug.php',
-    'composer.json',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
