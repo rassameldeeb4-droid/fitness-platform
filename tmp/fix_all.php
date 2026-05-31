@@ -280,9 +280,32 @@ echo "  vendor/composer/autoload_real.php: " . (file_exists("$fitcureTarget/vend
 echo "  vendor/autoload.php: " . (file_exists("$fitcureTarget/vendor/autoload.php") ? "OK" : "MISSING") . "\n";
 echo "  bootstrap/app.php: " . (file_exists("$fitcureTarget/bootstrap/app.php") ? "OK" : "MISSING") . "\n";
 
-// Clear error log for fresh test
-@file_put_contents("$fitcureTarget/error_log", '');
-@file_put_contents("$fitcureTarget/storage/logs/laravel.log", '');
+// Read error logs (after a fresh request to the site)
+echo "  Triggering site access...\n";
+$ctx = stream_context_create(['http' => ['timeout' => 3]]);
+@file_get_contents("https://busnisscard.com/fitcure/public/", false, $ctx);
+@file_get_contents("https://busnisscard.com/fitcure/public/login", false, $ctx);
+
+// Now check logs
+$fitcurePhpLog = "$fitcureTarget/error_log";
+if (file_exists($fitcurePhpLog) && filesize($fitcurePhpLog) > 0) {
+    $lines = file($fitcurePhpLog);
+    $last = array_slice($lines, -10);
+    echo "  error_log (last 10):\n";
+    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 400) . "\n"; }
+}
+$fitcureLaravelLog = "$fitcureTarget/storage/logs/laravel.log";
+if (file_exists($fitcureLaravelLog) && filesize($fitcureLaravelLog) > 0) {
+    $lines = file($fitcureLaravelLog);
+    $last = array_slice($lines, -10);
+    echo "  laravel.log (last 10):\n";
+    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 400) . "\n"; }
+}
+if (!file_exists($fitcurePhpLog) || filesize($fitcurePhpLog) === 0) {
+    echo "  error_log: empty/not found\n";
+}
+@file_put_contents($fitcurePhpLog, '');
+@file_put_contents($fitcureLaravelLog, '');
 echo "  Logs cleared\n";
 
 echo "\n=== ✅ Done! ===";
