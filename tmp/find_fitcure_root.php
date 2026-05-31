@@ -1,40 +1,39 @@
 <?php
 // Find the actual document root for fitcure.online
 
-$candidates = [
+echo "DOCUMENT_ROOT: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'N/A') . "\n";
+
+$paths = [
     '/home/busnisscard/public_html/fitcure.online',
     '/home/busnisscard/fitcure.online',
-    '/home/busnisscard/public_html/fitcure.online/public_html',
-    '/home/busnisscard/public_html/fitcure.online/public',
-    '/home/busnisscard/fitcure.online/public_html',
-    '/home/busnisscard/fitcure.online/public',
-    '/home/busnisscard/public_html',
     '/home/busnisscard/public_html/fitcure',
     '/home/busnisscard/fitcure',
 ];
 
-echo "Current script: " . __FILE__ . "\n";
-echo "Current dir: " . __DIR__ . "\n";
-echo "DOCUMENT_ROOT: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'N/A') . "\n";
-echo "SCRIPT_FILENAME: " . ($_SERVER['SCRIPT_FILENAME'] ?? 'N/A') . "\n\n";
-
-echo "Checking candidates for cgi-bin:\n";
-foreach ($candidates as $p) {
-    $cgi = "$p/cgi-bin";
-    if (is_dir($cgi)) {
-        echo "  ✅ $p (has cgi-bin)\n";
+foreach ($paths as $p) {
+    if (is_dir($p)) {
+        echo "✅ DIR EXISTS: $p\n";
+        $files = scandir($p);
+        echo "   Files: " . implode(', ', array_diff($files, ['.', '..'])) . "\n";
     } else {
-        echo "  ❌ $p\n";
+        echo "❌ NOT FOUND: $p\n";
     }
 }
 
-echo "\nChecking if our deployed files exist:\n";
-$paths = [
-    '/home/busnisscard/public_html/fitcure.online/.env',
-    '/home/busnisscard/fitcure.online/.env',
-    '/home/busnisscard/public_html/fitcure.online/public/index.php',
-    '/home/busnisscard/fitcure.online/public/index.php',
-];
-foreach ($paths as $p) {
-    echo "  " . (file_exists($p) ? "✅" : "❌") . " $p\n";
+// Check if the deploy_fitcure.php file exists
+echo "\nChecking if deploy_fitcure.php ran...\n";
+$deployScript = '/home/busnisscard/public_html/platform/tmp/deploy_fitcure.php';
+echo "deploy_fitcure.php exists: " . (file_exists($deployScript) ? 'yes' : 'no') . "\n";
+
+// Try creating a test file
+$testDir = '/home/busnisscard/public_html/fitcure.online';
+echo "\nAttempting to create $testDir...\n";
+if (@mkdir($testDir, 0755, true)) {
+    echo "  Created!\n";
+    file_put_contents("$testDir/test.txt", "hello");
+    echo "  test.txt written: " . (file_exists("$testDir/test.txt") ? 'yes' : 'no') . "\n";
+} else {
+    echo "  Failed to create\n";
+    $parent = dirname($testDir);
+    echo "  Parent $parent writable: " . (is_writable($parent) ? 'yes' : 'no') . "\n";
 }
