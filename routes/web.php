@@ -17,6 +17,7 @@ use App\Http\Controllers\Trainer\TraineeController as TrainerTraineeController;
 use App\Http\Controllers\Trainer\NutritionPlanController as TrainerNutritionPlanController;
 use App\Http\Controllers\Trainer\WorkoutPlanController as TrainerWorkoutPlanController;
 use App\Http\Controllers\Trainer\ProgressController as TrainerProgressController;
+use App\Http\Controllers\Trainer\WhatsAppController as TrainerWhatsAppController;
 use App\Http\Controllers\Doctor\DashboardController as DoctorDashboardController;
 use App\Http\Controllers\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Doctor\NutritionPlanController as DoctorNutritionPlanController;
@@ -123,6 +124,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/workout/{id}', [TrainerWorkoutPlanController::class, 'show'])->name('workout.show');
         Route::get('/progress', [TrainerProgressController::class, 'index'])->name('progress');
         Route::get('/progress/{memberId}', [TrainerProgressController::class, 'show'])->name('progress.show');
+        Route::get('/whatsapp', [TrainerWhatsAppController::class, 'index'])->name('whatsapp');
+        Route::post('/whatsapp', [TrainerWhatsAppController::class, 'update'])->name('whatsapp.update');
+        Route::post('/whatsapp/test', [TrainerWhatsAppController::class, 'test'])->name('whatsapp.test');
+        Route::post('/whatsapp/bulk', [TrainerWhatsAppController::class, 'sendBulk'])->name('whatsapp.bulk');
     });
 
     // Doctor Routes

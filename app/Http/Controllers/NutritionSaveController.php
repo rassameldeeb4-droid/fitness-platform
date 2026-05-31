@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\NutritionPlan;
 use App\Models\NutritionMeal;
 use App\Models\TimelineEvent;
+use App\Models\TrainerWhatsAppConfig;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -63,14 +64,25 @@ class NutritionSaveController extends Controller
             ]);
         }
 
+        $member = User::find($data['member_id']);
+
         TimelineEvent::create([
             'user_id' => auth()->id(),
             'related_user_id' => $data['member_id'],
             'type' => 'nutrition_plan_assigned',
             'title' => 'نظام غذائي ذكي',
-            'description' => 'تم إنشاء نظام غذائي بـ ' . $data['daily_calories'] . ' سعرة لـ ' . User::find($data['member_id'])->name,
+            'description' => 'تم إنشاء نظام غذائي بـ ' . $data['daily_calories'] . ' سعرة لـ ' . $member->name,
             'metadata' => ['plan_id' => $plan->id, 'goal' => $data['goal'], 'daily_calories' => $data['daily_calories']],
         ]);
+
+        $waConfig = TrainerWhatsAppConfig::where('trainer_id', auth()->id())->where('is_connected', true)->where('notify_nutrition', true)->first();
+        if ($waConfig && $member->phone) {
+            $msg = "🍽 *نظام غذائي جديد*\n\n"
+                 . "{$member->name}، تم إعداد خطة غذائية لك بـ {$data['daily_calories']} سعرة/يوم\n"
+                 . "الهدف: {$data['goal']}\n"
+                 . "تفضّل بمراجعة تطبيق FitCore للتفاصيل الكاملة ✅";
+            $waConfig->sendMessage($member->phone, $msg);
+        }
 
         return response()->json(['success' => true, 'plan_id' => $plan->id]);
     }

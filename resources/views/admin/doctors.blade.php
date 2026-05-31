@@ -8,9 +8,8 @@ $colors = [['bg'=>'#E1F5EE','tc'=>'#0F6E56'],['bg'=>'#FAEEDA','tc'=>'#854F0B'],[
     <div class="page-title" style="margin-bottom:0">إدارة الأطباء</div>
     <a href="{{ route('admin.doctors.create') }}" class="btn btn-primary"><i class="ti ti-plus"></i> إضافة طبيب</a>
 </div>
-<div class="stat-grid" style="grid-template-columns:repeat(2,1fr)">
-    <div class="stat-card"><div class="stat-label">إجمالي الأطباء</div><div class="stat-value">{{ $doctors->total() }}</div></div>
-    <div class="stat-card"><div class="stat-label">الأطباء المسجلون</div><div class="stat-value" style="color:#1D9E75">{{ $doctors->count() }}</div></div>
+<div class="stat-grid" style="grid-template-columns:repeat(1,1fr);max-width:300px">
+    <div class="stat-card"><div class="stat-label"><i class="ti ti-stethoscope" style="color:#534AB7"></i> إجمالي الأطباء</div><div class="stat-value" style="color:#534AB7">{{ $doctors->total() }}</div></div>
 </div>
 <div class="card" style="padding:0">
     <table>

@@ -222,6 +222,7 @@ if ($role === 'admin' || $role === 'super_admin') {
             <a href="{{ route('trainer.progress') }}" class="nav-item"><i class="ti ti-chart-line"></i> متابعة التقدم</a>
             <div class="nav-sec">التواصل</div>
             <a href="{{ route('chat.index') }}" class="nav-item {{ $r('chat') ? 'active-page' : '' }}"><i class="ti ti-message-circle"></i> المحادثات</a>
+            <a href="{{ route('trainer.whatsapp') }}" class="nav-item {{ $r('trainer.whatsapp') ? 'active-page' : '' }}"><i class="ti ti-brand-whatsapp"></i> واتساب</a>
             <a href="{{ route('exercises') }}" class="nav-item"><i class="ti ti-barbell"></i> مكتبة التمارين</a>
             <a href="{{ route('store') }}" class="nav-item"><i class="ti ti-shopping-bag"></i> المتجر</a>
         @elseif($role === 'doctor')
@@ -313,6 +314,7 @@ if ($role === 'admin') {
     ];
     $moreItems = [
         ['route' => 'trainer.progress', 'icon' => 'ti ti-chart-line', 'label' => 'متابعة التقدم'],
+        ['route' => 'trainer.whatsapp', 'icon' => 'ti ti-brand-whatsapp', 'label' => 'واتساب'],
         ['route' => 'store', 'icon' => 'ti ti-shopping-bag', 'label' => 'المتجر'],
     ];
 } elseif ($role === 'doctor') {

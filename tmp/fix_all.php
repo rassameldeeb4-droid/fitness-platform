@@ -69,6 +69,12 @@ $files = [
     'app/Http/Controllers/NutritionSaveController.php',
     'app/Http/Controllers/AiController.php',
     'resources/views/trainer/nutrition-create.blade.php',
+    'resources/views/trainer/whatsapp.blade.php',
+    'resources/views/admin/doctors.blade.php',
+    'app/Http/Controllers/Trainer/WhatsAppController.php',
+    'app/Models/TrainerWhatsAppConfig.php',
+    'database/migrations/2026_05_31_000001_create_trainer_whatsapp_configs_table.php',
+    'routes/web.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
@@ -113,6 +119,24 @@ if (!Schema::hasColumn('member_profiles', 'wrist_circumference')) {
         $t->string('job')->nullable()->after('complaints');
     });
     echo "added ✅\n";
+} else echo "exists ✅\n";
+
+// WhatsApp config table
+echo "\nWhatsApp config... ";
+if (!Schema::hasTable('trainer_whatsapp_configs')) {
+    Schema::create('trainer_whatsapp_configs', function ($t) {
+        $t->id();
+        $t->unsignedBigInteger('trainer_id')->unique();
+        $t->string('server_url', 255)->nullable();
+        $t->string('api_key', 100)->nullable();
+        $t->string('phone_number', 20)->nullable();
+        $t->boolean('is_connected')->default(false);
+        $t->boolean('notify_nutrition')->default(true);
+        $t->boolean('notify_workout')->default(true);
+        $t->boolean('notify_progress')->default(false);
+        $t->timestamps();
+    });
+    echo "created ✅\n";
 } else echo "exists ✅\n";
 
 // Fix app.blade.php sidebar links
