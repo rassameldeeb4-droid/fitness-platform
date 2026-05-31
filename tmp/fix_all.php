@@ -275,7 +275,33 @@ if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("
     echo "$copied files\n";
 }
 
-// Create a test PHP file to check if PHP works at all
+// Create test PHP files to diagnose 500 error
+$mainHt = @file_get_contents(dirname(dirname(__DIR__)) . '/.htaccess');
+echo "  Main .htaccess: " . ($mainHt ? "exists (" . strlen($mainHt) . " bytes)" : "NOT FOUND") . "\n";
+if ($mainHt && str_contains($mainHt, 'AddHandler')) {
+    preg_match('/AddHandler\s+(\S+)\s+(\S+)/', $mainHt, $m);
+    echo "  PHP handler: " . ($m[0] ?? 'none found') . "\n";
+}
+
+// Check if PHP handler is in platform .htaccess
+$platHt = @file_get_contents(dirname(dirname(__DIR__)) . '/platform/.htaccess');
+echo "  Platform .htaccess: " . ($platHt ? "exists" : "NOT FOUND") . "\n";
+if ($platHt && str_contains($platHt, 'ea-php') !== false) {
+    echo "  Found PHP handler in platform .htaccess\n";
+}
+
+// Copy PHP handler from main .htaccess to fitcure
+if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch)) {
+    $handlerLine = $handlerMatch[0];
+    $fcHt = @file_get_contents("$fitcureTarget/public/.htaccess");
+    if ($fcHt && !str_contains($fcHt, 'AddHandler')) {
+        $fcHt = "$handlerLine\n" . $fcHt;
+        file_put_contents("$fitcureTarget/public/.htaccess", $fcHt);
+        echo "  Added PHP handler to fitcure .htaccess\n";
+    }
+}
+
+// Test PHP execution in fitcure
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
