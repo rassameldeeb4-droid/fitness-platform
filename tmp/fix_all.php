@@ -305,18 +305,19 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
-// Check Laravel bootstrap
-$bootstrapTest = '<?php
-echo "BOOT_CHECK:";
-require __DIR__ . "/../vendor/autoload.php";
-echo "AUTOLOAD_OK:";
-$app = require_once __DIR__ . "/../bootstrap/app.php";
-echo "BOOTSTRAP_OK:";
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-echo "KERNEL_OK";
-';
-file_put_contents("$fitcureTarget/public/fc_bootstrap.php", $bootstrapTest);
-echo "  Bootstrap test file created\n";
+// Step-by-step bootstrap test
+$bootstrapSteps = ['autoload' => false, 'bootstrap' => false, 'kernel' => false];
+
+// Step 1: Just require autoload
+file_put_contents("$fitcureTarget/public/fc_s1.php", '<?php $r=require __DIR__."/../vendor/autoload.php";echo $r?"AUTOLOAD_OK":"AUTOLOAD_FAIL";');
+
+// Step 2: bootstrap/app.php
+file_put_contents("$fitcureTarget/public/fc_s2.php", '<?php require __DIR__."/../vendor/autoload.php";$a=require_once __DIR__."/../bootstrap/app.php";echo $a?"BOOT_OK":"BOOT_FAIL";');
+
+// Step 3: full kernel
+file_put_contents("$fitcureTarget/public/fc_s3.php", '<?php require __DIR__."/../vendor/autoload.php";$a=require_once __DIR__."/../bootstrap/app.php";$k=$a->make(Illuminate\Contracts\Http\Kernel::class);echo $k?"KERNEL_OK":"KERNEL_FAIL";');
+
+echo "  Bootstrap test files created\n";
 
 // Ensure .htaccess exists (not in GitHub repo, so create it)
 $htaccessContent = '<IfModule mod_rewrite.c>
