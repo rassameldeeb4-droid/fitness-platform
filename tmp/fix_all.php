@@ -76,6 +76,7 @@ $files = [
     'database/migrations/2026_05_31_000001_create_trainer_whatsapp_configs_table.php',
     'routes/web.php',
     'tmp/deploy_fitcure.php',
+    'tmp/fix_fitcure.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
