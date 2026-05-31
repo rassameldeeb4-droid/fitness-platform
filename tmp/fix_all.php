@@ -315,11 +315,33 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
+// Create storage directories if missing
+echo "  Checking storage directories...\n";
+$storageDirs = [
+    "$fitcureTarget/storage/framework/cache/data",
+    "$fitcureTarget/storage/framework/sessions",
+    "$fitcureTarget/storage/framework/views",
+    "$fitcureTarget/storage/framework/testing",
+    "$fitcureTarget/storage/logs",
+];
+foreach ($storageDirs as $d) {
+    if (!is_dir($d)) {
+        @mkdir($d, 0755, true);
+        echo "  Created $d\n";
+    }
+}
+
+// Fix permissions on storage
+if (function_exists('shell_exec')) {
+    $out = shell_exec("chmod -R 777 '$fitcureTarget/storage' 2>&1");
+    echo "  chmod storage: " . ($out ?: "done") . "\n";
+}
+
 // Check if Laravel boots now
 echo "  Testing Laravel bootstrap...\n";
 $ctx = stream_context_create(['http' => ['timeout' => 5]]);
 @file_get_contents("https://busnisscard.com/fitcure/public/", false, $ctx);
-sleep(1); // Wait for error log to be written
+sleep(1);
 $fcPhpLog = "$fitcureTarget/error_log";
 if (file_exists($fcPhpLog) && filesize($fcPhpLog) > 0) {
     $lines = file($fcPhpLog);
