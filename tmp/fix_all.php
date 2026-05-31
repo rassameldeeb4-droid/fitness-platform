@@ -259,6 +259,22 @@ if ($fitcureHtContent && !str_contains($fitcureHtContent, 'RewriteBase')) {
     echo "  .htaccess RewriteBase fixed\n";
 }
 
+// Fix vendor/composer directory (missing autoload_real.php)
+$vendorComposerSrc = "$base/platform/vendor/composer";
+$vendorComposerDst = "$fitcureTarget/vendor/composer";
+if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("$vendorComposerDst/autoload_real.php"))) {
+    echo "  Copying vendor/composer... ";
+    $copied = 0;
+    @mkdir($vendorComposerDst, 0755, true);
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($vendorComposerSrc, RecursiveDirectoryIterator::SKIP_DOTS));
+    foreach ($it as $f) {
+        $dest = $vendorComposerDst . '/' . $it->getSubPathname();
+        if ($f->isDir()) @mkdir($dest, 0755, true);
+        else { @copy($f, $dest); $copied++; }
+    }
+    echo "$copied files\n";
+}
+
 // Check error_log
 $fitcurePhpLog = "$fitcureTarget/error_log";
 if (file_exists($fitcurePhpLog) && filesize($fitcurePhpLog) > 0) {
