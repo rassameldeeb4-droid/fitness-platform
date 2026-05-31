@@ -226,6 +226,10 @@ if (function_exists('opcache_reset')) {
 // Also fix fitcure subdirectory
 echo "\n=== Fitcure subdirectory check ===\n";
 
+$fitcureTarget = '/home/busnisscard/public_html/fitcure';
+$fitcureEnv = "$fitcureTarget/.env";
+$fitcureHtaccess = "$fitcureTarget/public/.htaccess";
+
 // Fix APP_URL in .env
 $fitcureEnvContent = @file_get_contents($fitcureEnv);
 if ($fitcureEnvContent) {
@@ -233,9 +237,7 @@ if ($fitcureEnvContent) {
     file_put_contents($fitcureEnv, $fitcureEnvContent);
     echo "  APP_URL fixed\n";
 }
-$fitcureTarget = '/home/busnisscard/public_html/fitcure';
-$fitcureEnv = "$fitcureTarget/.env";
-$fitcureHtaccess = "$fitcureTarget/public/.htaccess";
+
 $fitcureHtContent = @file_get_contents($fitcureHtaccess);
 
 // Ensure APP_KEY + APP_DEBUG
