@@ -223,6 +223,53 @@ if (function_exists('opcache_reset')) {
     echo "Opcache cleared + files invalidated\n";
 }
 
+// Also fix fitcure subdirectory
+echo "\n=== Fitcure subdirectory check ===\n";
+$fitcureTarget = '/home/busnisscard/public_html/fitcure';
+$fitcureEnv = "$fitcureTarget/.env";
+$fitcureHtaccess = "$fitcureTarget/public/.htaccess";
+$fitcureHtContent = @file_get_contents($fitcureHtaccess);
+
+// Ensure APP_KEY + APP_DEBUG
+if (file_exists($fitcureEnv)) {
+    $envContent = file_get_contents($fitcureEnv);
+    $envDirty = false;
+    if (!preg_match('/APP_KEY=base64:/', $envContent)) {
+        $key = 'base64:' . base64_encode(random_bytes(32));
+        $envContent = preg_match('/APP_KEY=.+/', $envContent)
+            ? preg_replace('/APP_KEY=.+/', "APP_KEY=$key", $envContent)
+            : str_replace('APP_KEY=', "APP_KEY=$key", $envContent);
+        $envDirty = true;
+        echo "  APP_KEY set\n";
+    }
+    if (str_contains($envContent, 'APP_DEBUG=false')) {
+        $envContent = str_replace('APP_DEBUG=false', 'APP_DEBUG=true', $envContent);
+        $envDirty = true;
+        echo "  APP_DEBUG enabled\n";
+    }
+    if ($envDirty) file_put_contents($fitcureEnv, $envContent);
+}
+if ($fitcureHtContent && !str_contains($fitcureHtContent, 'RewriteBase')) {
+    $fitcureHtContent = str_replace(
+        'RewriteEngine On',
+        "RewriteEngine On\nRewriteBase /fitcure/public/",
+        $fitcureHtContent
+    );
+    file_put_contents($fitcureHtaccess, $fitcureHtContent);
+    echo "  .htaccess RewriteBase fixed\n";
+}
+
+// Check error_log
+$fitcurePhpLog = "$fitcureTarget/error_log";
+if (file_exists($fitcurePhpLog) && filesize($fitcurePhpLog) > 0) {
+    $logLines = file($fitcurePhpLog);
+    $last = array_slice($logLines, -5);
+    echo "  PHP error_log (last 5):\n";
+    foreach ($last as $l) { if (trim($l)) echo "    " . substr($l, 0, 400) . "\n"; }
+} else {
+    echo "  No PHP error_log found\n";
+}
+
 echo "\n=== ✅ Done! ===";
 echo "\nAdmin: /admin/doctors (إدارة الأطباء + إضافة/تعديل/حذف)";
 echo "\nDoctor: /doctor/appointments (إدارة المواعيد)";
