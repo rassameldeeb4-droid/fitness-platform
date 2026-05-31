@@ -305,17 +305,33 @@ if ($mainHt && preg_match('/AddHandler\s+\S+\s+\.php/', $mainHt, $handlerMatch))
 file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
 echo "  Test file created\n";
 
-// Step-by-step bootstrap test
-$bootstrapSteps = ['autoload' => false, 'bootstrap' => false, 'kernel' => false];
+// Deep diagnostic: try requiring autoload with error reporting
+$diagCode = '<?php
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+try {
+    $r = require __DIR__ . "/../vendor/autoload.php";
+    echo "AUTOLOAD_OK";
+} catch (\Throwable $e) {
+    echo "ERROR:" . $e->getMessage() . "|FILE:" . $e->getFile() . "|LINE:" . $e->getLine();
+}
+';
+file_put_contents("$fitcureTarget/public/fc_s1.php", $diagCode);
 
-// Step 1: Just require autoload
-file_put_contents("$fitcureTarget/public/fc_s1.php", '<?php $r=require __DIR__."/../vendor/autoload.php";echo $r?"AUTOLOAD_OK":"AUTOLOAD_FAIL";');
+// Check if vendor autoload has proper content
+$vendorAutoload = file_get_contents("$fitcureTarget/vendor/autoload.php");
+echo "  vendor/autoload.php: " . strlen($vendorAutoload) . " bytes\n";
+if ($vendorAutoload) echo "  autoload.php first line: " . explode("\n", $vendorAutoload)[0] . "\n";
 
-// Step 2: bootstrap/app.php
-file_put_contents("$fitcureTarget/public/fc_s2.php", '<?php require __DIR__."/../vendor/autoload.php";$a=require_once __DIR__."/../bootstrap/app.php";echo $a?"BOOT_OK":"BOOT_FAIL";');
-
-// Step 3: full kernel
-file_put_contents("$fitcureTarget/public/fc_s3.php", '<?php require __DIR__."/../vendor/autoload.php";$a=require_once __DIR__."/../bootstrap/app.php";$k=$a->make(Illuminate\Contracts\Http\Kernel::class);echo $k?"KERNEL_OK":"KERNEL_FAIL";');
+// Check if autoload_real.php exists
+$realExists = file_exists("$fitcureTarget/vendor/composer/autoload_real.php");
+echo "  vendor/composer/autoload_real.php: " . ($realExists ? "OK" : "MISSING") . "\n";
+if ($realExists) {
+    $realContent = file_get_contents("$fitcureTarget/vendor/composer/autoload_real.php");
+    echo "  autoload_real.php: " . strlen($realContent) . " bytes\n";
+    // Check for the getLoader function
+    echo "  has getLoader(): " . (str_contains($realContent, 'getLoader') ? "YES" : "NO") . "\n";
+}
 
 echo "  Bootstrap test files created\n";
 
