@@ -1,5 +1,19 @@
 <?php
 // Fix fitcure subdirectory deployment issues
+// Self-update: always fetch latest from GitHub to bypass opcache
+$self = __FILE__;
+$url = 'https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/main/tmp/fix_subdir.php?_=' . time();
+$latest = @file_get_contents($url);
+if ($latest) {
+    $localContent = file_exists($self) ? file_get_contents($self) : '';
+    if (md5($latest) !== md5($localContent)) {
+        file_put_contents($self, $latest);
+        // Clear opcache for this file
+        if (function_exists('opcache_invalidate')) opcache_invalidate($self, true);
+        eval('?>' . $latest);
+        exit;
+    }
+}
 $target = '/home/busnisscard/public_html/fitcure';
 
 echo "=== Fixing fitcure subdirectory ===\n\n";
