@@ -275,6 +275,10 @@ if (is_dir($vendorComposerSrc) && (!is_dir($vendorComposerDst) || !file_exists("
     echo "$copied files\n";
 }
 
+// Create a test PHP file to check if PHP works at all
+file_put_contents("$fitcureTarget/public/fc_test.php", "<?php echo 'FITCURE_PHP_WORKS';");
+echo "  Test file created\n";
+
 // Ensure .htaccess exists (not in GitHub repo, so create it)
 $htaccessContent = '<IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
