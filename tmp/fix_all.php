@@ -192,6 +192,46 @@ if (!Schema::hasTable('trainer_whatsapp_configs')) {
     echo "created ✅\n";
 } else echo "exists ✅\n";
 
+// Trainer posts table
+echo "\nTrainer posts... ";
+if (!Schema::hasTable('trainer_posts')) {
+    Schema::create('trainer_posts', function ($t) {
+        $t->id();
+        $t->foreignId('trainer_id')->constrained('users')->cascadeOnDelete();
+        $t->text('content');
+        $t->string('image')->nullable();
+        $t->timestamps();
+    });
+    echo "created ✅\n";
+} else echo "exists ✅\n";
+
+// Post comments table
+echo "\nPost comments... ";
+if (!Schema::hasTable('post_comments')) {
+    Schema::create('post_comments', function ($t) {
+        $t->id();
+        $t->foreignId('post_id')->constrained('trainer_posts')->cascadeOnDelete();
+        $t->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+        $t->text('content');
+        $t->timestamps();
+    });
+    echo "created ✅\n";
+} else echo "exists ✅\n";
+
+// Trainer reels table
+echo "\nTrainer reels... ";
+if (!Schema::hasTable('trainer_reels')) {
+    Schema::create('trainer_reels', function ($t) {
+        $t->id();
+        $t->foreignId('trainer_id')->constrained('users')->cascadeOnDelete();
+        $t->string('title');
+        $t->string('video');
+        $t->text('description')->nullable();
+        $t->timestamps();
+    });
+    echo "created ✅\n";
+} else echo "exists ✅\n";
+
 // Fix app.blade.php sidebar links
 echo "\nSidebar links... ";
 $layout = __DIR__ . '/../resources/views/layouts/app.blade.php';
