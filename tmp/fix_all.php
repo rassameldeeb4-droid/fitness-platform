@@ -1,4 +1,5 @@
 <?php
+@set_time_limit(0);
 echo "<pre>=== Fitness Platform Auto-Fix ===\n";
 echo "Version: v1.4 | " . date('Y-m-d H:i') . "\n\n";
 
