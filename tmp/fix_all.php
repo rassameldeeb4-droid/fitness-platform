@@ -86,6 +86,7 @@ $files = [
     'tmp/fitcure_diag.php',
     'tmp/fitcure_debug.php',
     'tmp/seed_demo.php',
+    'tmp/check_data.php',
 ];
 $ok = 0; $fail = 0;
 foreach ($files as $f) {
