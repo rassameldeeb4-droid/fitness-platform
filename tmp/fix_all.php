@@ -96,6 +96,10 @@ $files = [
     'database/migrations/2026_06_03_000003_create_trainer_reels_table.php',
     'resources/views/profiles/trainer.blade.php',
     'app/Http/Controllers/ProfileController.php',
+    'app/Models/AppSetting.php',
+    'app/Http/Controllers/Admin/SettingsController.php',
+    'resources/views/admin/settings.blade.php',
+    'database/migrations/2026_06_03_000004_create_app_settings_table.php',
     'tmp/deploy_fitcure.php',
     'tmp/fix_subdir.php',
     'tmp/fix_fitcure.php',
@@ -227,6 +231,17 @@ if (!Schema::hasTable('trainer_reels')) {
         $t->string('title');
         $t->string('video');
         $t->text('description')->nullable();
+        $t->timestamps();
+    });
+    echo "created ✅\n";
+} else echo "exists ✅\n";
+
+// App settings table
+echo "\nApp settings... ";
+if (!Schema::hasTable('app_settings')) {
+    Schema::create('app_settings', function ($t) {
+        $t->string('key')->primary();
+        $t->text('value')->nullable();
         $t->timestamps();
     });
     echo "created ✅\n";
