@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Schema;
 
 if (!Schema::hasTable('app_settings')) {
     Schema::create('app_settings', function ($t) {
-        $t->string('key')->primary();
+        $t->string('key', 100)->primary();
         $t->text('value')->nullable();
         $t->timestamps();
     });

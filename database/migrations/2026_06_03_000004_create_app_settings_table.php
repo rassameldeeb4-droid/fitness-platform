@@ -8,7 +8,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('app_settings', function (Blueprint $table) {
-            $table->string('key')->primary();
+            $table->string('key', 100)->primary();
             $table->text('value')->nullable();
             $table->timestamps();
         });
