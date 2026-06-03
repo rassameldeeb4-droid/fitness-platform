@@ -2,6 +2,28 @@
 echo "<pre>=== Fitness Platform Auto-Fix ===\n";
 echo "Version: v1.4 | " . date('Y-m-d H:i') . "\n\n";
 
+// Fix routes/web.php before booting Laravel (to avoid fatal errors from duplicate imports)
+$routesFile = __DIR__ . '/../routes/web.php';
+if (file_exists($routesFile)) {
+    $rc = file_get_contents($routesFile);
+    $lines = explode("\n", $rc);
+    $seen = [];
+    $newLines = [];
+    $fixed = false;
+    foreach ($lines as $line) {
+        $trimmed = trim($line);
+        if (str_starts_with($trimmed, 'use ') && str_ends_with($trimmed, ';')) {
+            if (in_array($trimmed, $seen)) { $fixed = true; continue; }
+            $seen[] = $trimmed;
+        }
+        $newLines[] = $line;
+    }
+    if ($fixed) {
+        file_put_contents($routesFile, implode("\n", $newLines));
+        echo "Fixed duplicate imports in routes/web.php\n\n";
+    }
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
