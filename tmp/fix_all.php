@@ -1,23 +1,4 @@
 <?php
-// Self-update: always try to get latest version from GitHub
-$self = __FILE__;
-$ref = 'main';
-$url = 'https://raw.githubusercontent.com/rassameldeeb4-droid/fitness-platform/' . $ref . '/tmp/fix_all.php?_=' . time();
-$latest = @file_get_contents($url);
-$downloaded = $latest !== false;
-if ($latest) {
-    $localContent = file_exists($self) ? file_get_contents($self) : '';
-    $newHash = md5($latest);
-    $oldHash = md5($localContent);
-    if ($newHash !== $oldHash) {
-        file_put_contents($self, $latest);
-        echo "🔄 Self-updated (new hash: $newHash)\n\n";
-        eval('?>' . $latest);
-        exit;
-    }
-}
-
-// If we get here, we're already the latest version
 echo "<pre>=== Fitness Platform Auto-Fix ===\n";
 echo "Version: v1.4 | " . date('Y-m-d H:i') . "\n\n";
 
@@ -102,6 +83,28 @@ foreach ($files as $f) {
     }
 }
 echo "\n$ok files created/updated, $fail failed\n";
+
+// Fix duplicate imports in routes/web.php
+$routesFile = __DIR__ . '/../routes/web.php';
+if (file_exists($routesFile)) {
+    $rc = file_get_contents($routesFile);
+    $lines = explode("\n", $rc);
+    $seen = [];
+    $newLines = [];
+    $fixed = false;
+    foreach ($lines as $line) {
+        $trimmed = trim($line);
+        if (str_starts_with($trimmed, 'use ') && str_ends_with($trimmed, ';')) {
+            if (in_array($trimmed, $seen)) { $fixed = true; continue; }
+            $seen[] = $trimmed;
+        }
+        $newLines[] = $line;
+    }
+    if ($fixed) {
+        file_put_contents($routesFile, implode("\n", $newLines));
+        echo "\nFixed duplicate imports in routes/web.php\n";
+    }
+}
 
 // Create appointments table
 echo "\nAppointments table... ";
