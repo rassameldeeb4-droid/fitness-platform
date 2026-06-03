@@ -75,6 +75,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/gyms', [AdminGymController::class, 'store'])->name('gyms.store');
         Route::get('/packages', [AdminPackageController::class, 'index'])->name('packages');
         Route::post('/packages', [AdminPackageController::class, 'store'])->name('packages.store');
+        Route::get('/packages/{id}/edit', [AdminPackageController::class, 'edit'])->name('packages.edit');
+        Route::put('/packages/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
+        Route::delete('/packages/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
         Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue');
         Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
