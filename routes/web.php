@@ -17,7 +17,10 @@ use App\Http\Controllers\Trainer\TraineeController as TrainerTraineeController;
 use App\Http\Controllers\Trainer\NutritionPlanController as TrainerNutritionPlanController;
 use App\Http\Controllers\Trainer\WorkoutPlanController as TrainerWorkoutPlanController;
 use App\Http\Controllers\Trainer\ProgressController as TrainerProgressController;
+use App\Http\Controllers\Trainer\PostController as TrainerPostController;
+use App\Http\Controllers\Trainer\ReelController as TrainerReelController;
 use App\Http\Controllers\Trainer\WhatsAppController as TrainerWhatsAppController;
+use App\Http\Controllers\Member\CommentController as MemberCommentController;
 use App\Http\Controllers\Doctor\DashboardController as DoctorDashboardController;
 use App\Http\Controllers\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Doctor\NutritionPlanController as DoctorNutritionPlanController;
@@ -131,6 +134,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/whatsapp', [TrainerWhatsAppController::class, 'update'])->name('whatsapp.update');
         Route::post('/whatsapp/test', [TrainerWhatsAppController::class, 'test'])->name('whatsapp.test');
         Route::post('/whatsapp/bulk', [TrainerWhatsAppController::class, 'sendBulk'])->name('whatsapp.bulk');
+        Route::get('/posts', [TrainerPostController::class, 'index'])->name('posts');
+        Route::post('/posts', [TrainerPostController::class, 'store'])->name('posts.store');
+        Route::delete('/posts/{id}', [TrainerPostController::class, 'destroy'])->name('posts.destroy');
+        Route::get('/reels', [TrainerReelController::class, 'index'])->name('reels');
+        Route::post('/reels', [TrainerReelController::class, 'store'])->name('reels.store');
+        Route::delete('/reels/{id}', [TrainerReelController::class, 'destroy'])->name('reels.destroy');
     });
 
     // Doctor Routes
@@ -170,6 +179,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/appointments', [MemberAppointmentController::class, 'index'])->name('appointments');
     });
+
+    // Comments (any authenticated user can comment)
+    Route::post('/posts/{postId}/comment', [MemberCommentController::class, 'store'])->name('posts.comment');
+    Route::delete('/comments/{id}', [MemberCommentController::class, 'destroy'])->name('comments.destroy');
 
     // Shared Routes (accessible by any authenticated user)
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

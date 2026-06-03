@@ -217,6 +217,8 @@ if ($role === 'admin' || $role === 'super_admin') {
         @elseif($role === 'trainer')
             <div class="nav-sec">الرئيسية</div>
             <a href="{{ route('trainer.dashboard') }}" class="nav-item {{ $r('trainer.dashboard') ? 'active-page' : '' }}"><i class="ti ti-timeline"></i> التايم لاين</a>
+            <a href="{{ route('trainer.posts') }}" class="nav-item {{ $r('trainer.posts') ? 'active-page' : '' }}"><i class="ti ti-article"></i> المنشورات</a>
+            <a href="{{ route('trainer.reels') }}" class="nav-item {{ $r('trainer.reels') ? 'active-page' : '' }}"><i class="ti ti-video"></i> الريلات</a>
             <a href="{{ route('trainer.trainees') }}" class="nav-item {{ $r('trainer.trainees') ? 'active-page' : '' }}"><i class="ti ti-users"></i> متدربيّ @if($traineeCount)<span class="nav-badge nav-badge-green">{{ $traineeCount }}</span>@endif</a>
             <div class="nav-sec">التدريب والتغذية</div>
             <a href="{{ route('trainer.progress') }}" class="nav-item"><i class="ti ti-chart-line"></i> متابعة التقدم</a>
@@ -308,13 +310,15 @@ if ($role === 'admin') {
 } elseif ($role === 'trainer') {
     $bottomItems = [
         ['route' => 'trainer.dashboard', 'icon' => 'ti ti-timeline', 'label' => 'الرئيسية'],
+        ['route' => 'trainer.posts', 'icon' => 'ti ti-article', 'label' => 'منشوراتي'],
         ['route' => 'trainer.trainees', 'icon' => 'ti ti-users', 'label' => 'متدربيّ'],
         ['route' => 'chat.index', 'icon' => 'ti ti-message-circle', 'label' => 'المحادثات'],
-        ['route' => 'exercises', 'icon' => 'ti ti-barbell', 'label' => 'التمارين'],
     ];
     $moreItems = [
+        ['route' => 'trainer.reels', 'icon' => 'ti ti-video', 'label' => 'الريلات'],
         ['route' => 'trainer.progress', 'icon' => 'ti ti-chart-line', 'label' => 'متابعة التقدم'],
         ['route' => 'trainer.whatsapp', 'icon' => 'ti ti-brand-whatsapp', 'label' => 'واتساب'],
+        ['route' => 'exercises', 'icon' => 'ti ti-barbell', 'label' => 'التمارين'],
         ['route' => 'store', 'icon' => 'ti ti-shopping-bag', 'label' => 'المتجر'],
     ];
 } elseif ($role === 'doctor') {
