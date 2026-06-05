@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Schema;
 // Download & create ALL missing files from GitHub
 echo "Downloading missing files...\n";
 $files = [
+    'tmp/check_text.php',
     'tmp/deploy_settings.php',
     'composer.json',
     'app/Http/Controllers/Admin/DoctorController.php',
