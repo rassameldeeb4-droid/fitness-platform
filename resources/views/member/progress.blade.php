@@ -1,27 +1,37 @@
 @extends('layouts.app')
 @section('title', 'تقدمي')
+@php
+$firstLog = $logs->last();
+$firstWeight = $firstLog->weight ?? $profile->current_weight ?? null;
+$currentWeight = $profile->current_weight ?? null;
+$targetWeight = $profile->target_weight ?? null;
+$weightVals = $logs->sortBy('logged_date')->pluck('weight')->values();
+@endphp
 @section('content')
 <div class="page-title">تقدمي</div>
 <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="stat-card"><div class="stat-label">الوزن الابتدائي</div><div class="stat-value">92 كغ</div></div>
-    <div class="stat-card"><div class="stat-label">الوزن الحالي</div><div class="stat-value" style="color:#1D9E75">{{ $profile->current_weight ?? 89 }} كغ</div></div>
-    <div class="stat-card"><div class="stat-label">الخسارة</div><div class="stat-value" style="color:#1D9E75">{{ 92 - ($profile->current_weight ?? 89) }} كغ</div></div>
-    <div class="stat-card"><div class="stat-label">الهدف</div><div class="stat-value">{{ $profile->target_weight ?? 82 }} كغ</div></div>
+    <div class="stat-card"><div class="stat-label">الوزن الابتدائي</div><div class="stat-value">{{ $firstWeight ? $firstWeight.' كغ' : '—' }}</div></div>
+    <div class="stat-card"><div class="stat-label">الوزن الحالي</div><div class="stat-value" style="color:#1D9E75">{{ $currentWeight ? $currentWeight.' كغ' : '—' }}</div></div>
+    <div class="stat-card"><div class="stat-label">الخسارة</div><div class="stat-value" style="color:#1D9E75">{{ ($firstWeight && $currentWeight) ? ($firstWeight - $currentWeight).' كغ' : '—' }}</div></div>
+    <div class="stat-card"><div class="stat-label">الهدف</div><div class="stat-value">{{ $targetWeight ? $targetWeight.' كغ' : '—' }}</div></div>
 </div>
 <div class="card">
     <div class="card-title"><i class="ti ti-chart-line" style="color:#1D9E75"></i> منحنى التقدم</div>
-    @php $weights = $logs->pluck('weight')->reverse()->values(); $vals = $weights->count() ? $weights->toArray() : [92,91.5,91,90.2,89.8,89]; @endphp
+    @if($weightVals->count())
     <div style="display:flex;align-items:flex-end;gap:6px;height:100px;padding-top:1rem">
-        @foreach($vals as $i => $v)
-        @php $h = max(round((93 - $v) * 20), 5); @endphp
+        @foreach($weightVals as $i => $v)
+        @php $h = max(round((max($weightVals->toArray()) + 2 - $v) * 15), 5); @endphp
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
             <div style="font-size:10px;color:#1D9E75">{{ $v }}</div>
-            <div style="height:{{ $h }}px;background:#1D9E75;border-radius:3px 3px 0 0;width:100%;opacity:{{ 0.5 + $i * 0.1 }}"></div>
-            <div style="font-size:9px;color:var(--color-text-tertiary)">أ{{ $i+1 }}</div>
+            <div style="height:{{ $h }}px;background:#1D9E75;border-radius:3px 3px 0 0;width:100%;opacity:{{ 0.5 + (min(10,$i) * 0.05) }}"></div>
+            <div style="font-size:9px;color:var(--color-text-tertiary)">{{ $i+1 }}</div>
         </div>
         @endforeach
     </div>
-    <div style="margin-top:1rem;font-size:13px;color:var(--color-text-secondary)">متبقي حتى الهدف: {{ $profile->current_weight - $profile->target_weight ?? 7 }} كغ — استمر هكذا! 💪</div>
+    @else
+    <div style="text-align:center;padding:2rem;color:var(--color-text-tertiary);font-size:13px">لا توجد قياسات بعد — سجل أول قياس</div>
+    @endif
+    <div style="margin-top:1rem;font-size:13px;color:var(--color-text-secondary)">{{ ($currentWeight && $targetWeight) ? 'متبقي حتى الهدف: '.($currentWeight - $targetWeight).' كغ' : '' }}</div>
 </div>
 
 <div class="card">

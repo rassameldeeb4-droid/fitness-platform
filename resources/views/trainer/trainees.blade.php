@@ -17,7 +17,7 @@ $colors = [['bg'=>'#E1F5EE','tc'=>'#0F6E56'],['bg'=>'#FAEEDA','tc'=>'#854F0B'],[
         <div>
             <div style="font-size:15px;font-weight:500;margin-bottom:2px"><a href="{{ route('trainer.trainees.show', $trainee->id) }}">{{ $trainee->name }}</a></div>
             <div style="font-size:12px;color:var(--color-text-secondary)">{{ $mp->goal ?? '—' }} • {{ $mp->current_weight ?? '?' }} كغ</div>
-            <div style="color:#854F0B;font-size:12px">★★★★★</div>
+            <div style="color:#854F0B;font-size:12px">@for($s=1;$s<=5;$s++){{ $s <= round(($mp->progress_percentage ?? 0) / 20) ? '★' : '☆' }}@endfor</div>
         </div>
     </div>
     <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;display:flex;justify-content:space-between"><span>التقدم</span><span>{{ $mp->progress_percentage ?? 0 }}%</span></div>

@@ -19,7 +19,7 @@
     <div class="card" style="padding:10px;text-align:center"><div style="font-size:22px;font-weight:500;color:#1D9E75">{{ $member->memberProfile->current_weight ?? '—' }} كغ</div><div style="font-size:11px;color:var(--color-text-secondary)">الوزن</div></div>
     <div class="card" style="padding:10px;text-align:center"><div style="font-size:22px;font-weight:500;color:#534AB7">{{ $member->memberProfile->body_fat ?? '—' }}%</div><div style="font-size:11px;color:var(--color-text-secondary)">الدهون</div></div>
     <div class="card" style="padding:10px;text-align:center"><div style="font-size:22px;font-weight:500;color:#185FA5">{{ $member->memberProfile->progress_percentage ?? 0 }}%</div><div style="font-size:11px;color:var(--color-text-secondary)">التقدم</div></div>
-    <div class="card" style="padding:10px;text-align:center"><div style="font-size:22px;font-weight:500;color:#854F0B">{{ str_repeat('★', 5) }}</div><div style="font-size:11px;color:var(--color-text-secondary)">التزام</div></div>
+    <div class="card" style="padding:10px;text-align:center"><div style="font-size:22px;font-weight:500;color:#854F0B">@php $stars = round(($member->memberProfile->progress_percentage ?? 0) / 20); @endphp @for($s=1;$s<=5;$s++){{ $s <= $stars ? '★' : '☆' }}@endfor</div><div style="font-size:11px;color:var(--color-text-secondary)">التزام</div></div>
 </div>
 @php $mp = $member->memberProfile; @endphp
 @if($mp->injuries || $mp->complaints)

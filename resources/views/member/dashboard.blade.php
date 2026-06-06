@@ -3,11 +3,11 @@
 @section('content')
 <div class="page-title">لوحتي الشخصية</div>
 <div class="stat-grid">
-    <div class="stat-card"><div class="stat-label">الوزن الحالي</div><div class="stat-value">{{ $profile->current_weight ?? 89 }} <span style="font-size:14px">كغ</span></div><div class="stat-sub">الهدف: {{ $profile->target_weight ?? 82 }} كغ</div></div>
-    <div class="stat-card"><div class="stat-label">التقدم العام</div><div class="stat-value" style="color:#1D9E75">{{ $profile->progress_percentage ?? 65 }}%</div></div>
-    <div class="stat-card"><div class="stat-label">التمارين هذا الأسبوع</div><div class="stat-value">3/{{ $profile->workout_days_per_week ?? 4 }}</div></div>
+    <div class="stat-card"><div class="stat-label">الوزن الحالي</div><div class="stat-value">{{ $profile->current_weight ?? '—' }} <span style="font-size:14px">كغ</span></div><div class="stat-sub">الهدف: {{ $profile->target_weight ?? '—' }} كغ</div></div>
+    <div class="stat-card"><div class="stat-label">التقدم العام</div><div class="stat-value" style="color:#1D9E75">{{ $profile->progress_percentage ?? 0 }}%</div></div>
+    <div class="stat-card"><div class="stat-label">التمارين هذا الأسبوع</div><div class="stat-value">{{ $profile->workout_days_per_week ?? '—' }}</div></div>
     @php $meals = $nutritionPlan->meals ?? collect(); $totalCal = $meals->sum('calories'); @endphp
-    <div class="stat-card"><div class="stat-label">السعرات اليوم</div><div class="stat-value">{{ $totalCal ?: 1840 }}</div><div class="stat-sub">الهدف: {{ $nutritionPlan->daily_calories ?? 2100 }}</div></div>
+    <div class="stat-card"><div class="stat-label">السعرات اليوم</div><div class="stat-value">{{ $totalCal ?: '—' }}</div><div class="stat-sub">الهدف: {{ $nutritionPlan->daily_calories ?? '—' }}</div></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div class="card">
@@ -20,13 +20,7 @@
             </div>
             @endforeach
         @else
-            @php $fallbackMeals = [['الفطور','شوفان + بيض + موز','480'],['الغداء','دجاج + أرز + سلطة','650'],['العشاء','سلمون + خضار','520']]; @endphp
-            @foreach($fallbackMeals as $m)
-            <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:8px">
-                <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:500">{{ $m[0] }}</span><span class="badge badge-green">{{ $m[2] }} سعرة</span></div>
-                <div style="font-size:11px;color:var(--color-text-secondary)">{{ $m[1] }}</div>
-            </div>
-            @endforeach
+            <div style="text-align:center;padding:2rem;color:var(--color-text-tertiary);font-size:13px">لم يتم تعيين خطة غذائية بعد</div>
         @endif
     </div>
     <div class="card">
@@ -40,12 +34,7 @@
             </div>
             @endforeach
         @else
-            @php $fallbackEx = [['بنش برس','4×12'],['دمبل كيرل','3×15'],['ترايسبس','3×12'],['كتف','4×10']]; @endphp
-            @foreach($fallbackEx as $e)
-            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px">
-                <span>{{ $e[0] }}</span><span class="badge badge-blue">{{ $e[1] }}</span>
-            </div>
-            @endforeach
+            <div style="text-align:center;padding:2rem;color:var(--color-text-tertiary);font-size:13px">لم يتم تعيين خطة تدريبية بعد</div>
         @endif
     </div>
 </div>

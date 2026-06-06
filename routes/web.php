@@ -18,20 +18,15 @@ use App\Http\Controllers\Trainer\NutritionPlanController as TrainerNutritionPlan
 use App\Http\Controllers\Trainer\WorkoutPlanController as TrainerWorkoutPlanController;
 use App\Http\Controllers\Trainer\ProgressController as TrainerProgressController;
 use App\Http\Controllers\Trainer\PostController as TrainerPostController;
-use App\Http\Controllers\Trainer\ReelController as TrainerReelController;
-use App\Http\Controllers\Trainer\WhatsAppController as TrainerWhatsAppController;
-use App\Http\Controllers\Member\CommentController as MemberCommentController;
 use App\Http\Controllers\Doctor\DashboardController as DoctorDashboardController;
 use App\Http\Controllers\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Doctor\NutritionPlanController as DoctorNutritionPlanController;
 use App\Http\Controllers\Doctor\WorkoutPlanController as DoctorWorkoutPlanController;
-use App\Http\Controllers\Doctor\AppointmentController as DoctorAppointmentController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\NutritionController as MemberNutritionController;
 use App\Http\Controllers\Member\WorkoutController as MemberWorkoutController;
 use App\Http\Controllers\Member\ProgressController as MemberProgressController;
 use App\Http\Controllers\Member\NotificationController as MemberNotificationController;
-use App\Http\Controllers\Member\AppointmentController as MemberAppointmentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ChatController;
@@ -41,7 +36,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\GymController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AiController;
-use App\Http\Controllers\NutritionSaveController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -67,20 +61,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/members', [AdminMemberController::class, 'store'])->name('members.store');
         Route::get('/members/{id}', [AdminMemberController::class, 'show'])->name('members.show');
         Route::get('/trainers', [AdminTrainerController::class, 'index'])->name('trainers');
-        Route::get('/trainers/create', [AdminTrainerController::class, 'create'])->name('trainers.create');
-        Route::post('/trainers', [AdminTrainerController::class, 'store'])->name('trainers.store');
         Route::get('/trainers/{id}', [AdminTrainerController::class, 'show'])->name('trainers.show');
-        Route::get('/trainers/{id}/edit', [AdminTrainerController::class, 'edit'])->name('trainers.edit');
-        Route::put('/trainers/{id}', [AdminTrainerController::class, 'update'])->name('trainers.update');
-        Route::delete('/trainers/{id}', [AdminTrainerController::class, 'destroy'])->name('trainers.destroy');
-        Route::get('/trainers/{id}/trainees', [AdminTrainerController::class, 'trainees'])->name('trainers.trainees');
         Route::get('/gyms', [AdminGymController::class, 'index'])->name('gyms');
         Route::post('/gyms', [AdminGymController::class, 'store'])->name('gyms.store');
+        Route::get('/gyms/{gym}/edit', [AdminGymController::class, 'edit'])->name('gyms.edit');
+        Route::put('/gyms/{gym}', [AdminGymController::class, 'update'])->name('gyms.update');
+        Route::delete('/gyms/{gym}', [AdminGymController::class, 'destroy'])->name('gyms.destroy');
         Route::get('/packages', [AdminPackageController::class, 'index'])->name('packages');
         Route::post('/packages', [AdminPackageController::class, 'store'])->name('packages.store');
-        Route::get('/packages/{id}/edit', [AdminPackageController::class, 'edit'])->name('packages.edit');
-        Route::put('/packages/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
-        Route::delete('/packages/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
         Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue');
         Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
@@ -99,20 +87,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/exercises/{exercise}/edit', [AdminExerciseController::class, 'edit'])->name('exercises.edit');
         Route::put('/exercises/{exercise}', [AdminExerciseController::class, 'update'])->name('exercises.update');
         Route::delete('/exercises/{exercise}', [AdminExerciseController::class, 'destroy'])->name('exercises.destroy');
-        Route::post('/exercises/{exercise}/delete-image', [AdminExerciseController::class, 'deleteImage'])->name('exercises.delete-image');
-        Route::post('/exercises/{exercise}/delete-video', [AdminExerciseController::class, 'deleteVideo'])->name('exercises.delete-video');
 
         Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
 
         Route::get('/doctors', [AdminDoctorController::class, 'index'])->name('doctors');
-        Route::get('/doctors/create', [AdminDoctorController::class, 'create'])->name('doctors.create');
-        Route::post('/doctors', [AdminDoctorController::class, 'store'])->name('doctors.store');
-        Route::get('/doctors/{id}', [AdminDoctorController::class, 'show'])->name('doctors.show');
-        Route::get('/doctors/{id}/edit', [AdminDoctorController::class, 'edit'])->name('doctors.edit');
-        Route::put('/doctors/{id}', [AdminDoctorController::class, 'update'])->name('doctors.update');
-        Route::delete('/doctors/{id}', [AdminDoctorController::class, 'destroy'])->name('doctors.destroy');
-        Route::get('/doctors/{id}/patients', [AdminDoctorController::class, 'patients'])->name('doctors.patients');
     });
 
     // Trainer Routes
@@ -130,16 +109,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/workout/{id}', [TrainerWorkoutPlanController::class, 'show'])->name('workout.show');
         Route::get('/progress', [TrainerProgressController::class, 'index'])->name('progress');
         Route::get('/progress/{memberId}', [TrainerProgressController::class, 'show'])->name('progress.show');
-        Route::get('/whatsapp', [TrainerWhatsAppController::class, 'index'])->name('whatsapp');
-        Route::post('/whatsapp', [TrainerWhatsAppController::class, 'update'])->name('whatsapp.update');
-        Route::post('/whatsapp/test', [TrainerWhatsAppController::class, 'test'])->name('whatsapp.test');
-        Route::post('/whatsapp/bulk', [TrainerWhatsAppController::class, 'sendBulk'])->name('whatsapp.bulk');
-        Route::get('/posts', [TrainerPostController::class, 'index'])->name('posts');
         Route::post('/posts', [TrainerPostController::class, 'store'])->name('posts.store');
-        Route::delete('/posts/{id}', [TrainerPostController::class, 'destroy'])->name('posts.destroy');
-        Route::get('/reels', [TrainerReelController::class, 'index'])->name('reels');
-        Route::post('/reels', [TrainerReelController::class, 'store'])->name('reels.store');
-        Route::delete('/reels/{id}', [TrainerReelController::class, 'destroy'])->name('reels.destroy');
     });
 
     // Doctor Routes
@@ -155,13 +125,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/workout/create/{memberId}', [DoctorWorkoutPlanController::class, 'create'])->name('workout.create');
         Route::post('/workout', [DoctorWorkoutPlanController::class, 'store'])->name('workout.store');
         Route::get('/workout/{id}', [DoctorWorkoutPlanController::class, 'show'])->name('workout.show');
-
-        Route::get('/appointments', [DoctorAppointmentController::class, 'index'])->name('appointments');
-        Route::get('/appointments/create', [DoctorAppointmentController::class, 'create'])->name('appointments.create');
-        Route::post('/appointments', [DoctorAppointmentController::class, 'store'])->name('appointments.store');
-        Route::get('/appointments/{appointment}', [DoctorAppointmentController::class, 'show'])->name('appointments.show');
-        Route::post('/appointments/{appointment}/complete', [DoctorAppointmentController::class, 'complete'])->name('appointments.complete');
-        Route::post('/appointments/{appointment}/cancel', [DoctorAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
     // Member Routes
@@ -176,13 +139,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/progress', [MemberProgressController::class, 'store'])->name('progress.store');
         Route::get('/notifications', [MemberNotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications', [MemberNotificationController::class, 'update'])->name('notifications.update');
-
-        Route::get('/appointments', [MemberAppointmentController::class, 'index'])->name('appointments');
     });
-
-    // Comments (any authenticated user can comment)
-    Route::post('/posts/{postId}/comment', [MemberCommentController::class, 'store'])->name('posts.comment');
-    Route::delete('/comments/{id}', [MemberCommentController::class, 'destroy'])->name('comments.destroy');
 
     // Shared Routes (accessible by any authenticated user)
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
@@ -218,9 +175,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/generate-workout', [App\Http\Controllers\AiController::class, 'generateWorkout'])->name('generate-workout');
         Route::post('/analyze-food', [App\Http\Controllers\AiController::class, 'analyzeFood'])->name('analyze-food');
     });
-
-    // Save AI-generated nutrition plan with meals
-    Route::post('/nutrition/save', [NutritionSaveController::class, 'store'])->name('nutrition.save');
 });
 
 require __DIR__.'/auth.php';

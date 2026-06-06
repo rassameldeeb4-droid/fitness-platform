@@ -252,44 +252,7 @@ if (!Schema::hasTable('app_settings')) {
 } else echo "exists ✅\n";
 
 // Fix app.blade.php sidebar links
-echo "\nSidebar links... ";
-$layout = __DIR__ . '/../resources/views/layouts/app.blade.php';
-$c = file_get_contents($layout);
-$ch = 0;
-
-// Doctors in sidebar nav
-if (strpos($c, 'admin.doctors') === false) {
-    $c = str_replace(
-        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>',
-        '<a href="{{ route(\'admin.trainers\') }}" class="nav-item {{ $r(\'admin.trainers\') ? \'active-page\' : \'\' }}"><i class="ti ti-user-star"></i> المدربون</a>
-            <a href="{{ route(\'admin.doctors\') }}" class="nav-item {{ $r(\'admin.doctors\') ? \'active-page\' : \'\' }}"><i class="ti ti-stethoscope"></i> الأطباء</a>',
-        $c
-    );
-    $ch++;
-}
-
-// Doctor appointments in bottomItems
-if (strpos($c, 'doctor.appointments') === false) {
-    $c = str_replace(
-        "'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'",
-        "'doctor.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'doctor.patients', 'icon' => 'ti ti-users', 'label' => 'مرضاي'",
-        $c
-    );
-    $ch++;
-}
-
-// Member appointments in moreItems
-if (strpos($c, 'member.appointments') === false) {
-    $c = str_replace(
-        "'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'",
-        "'member.appointments', 'icon' => 'ti ti-calendar', 'label' => 'المواعيد'],\n        ['route' => 'member.food-analyzer', 'icon' => 'ti ti-search', 'label' => 'محلل الطعام'",
-        $c
-    );
-    $ch++;
-}
-
-file_put_contents($layout, $c);
-echo $ch > 0 ? "updated ($ch changes)\n" : "already ok\n";
+echo "\nSidebar links... (skipped - now managed via git)\n";
 
 // Clear view & route cache
 $cache = __DIR__ . '/../storage/framework/views';

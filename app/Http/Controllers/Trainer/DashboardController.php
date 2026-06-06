@@ -8,6 +8,8 @@ use App\Models\TimelineEvent;
 use App\Models\WorkoutPlan;
 use App\Models\NutritionPlan;
 use App\Models\ProgressLog;
+use App\Models\TrainerSession;
+use App\Models\TrainerPost;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -32,8 +34,20 @@ class DashboardController extends Controller
         $workoutPlansCount = WorkoutPlan::where('trainer_id', $trainerId)->count();
         $nutritionPlansCount = NutritionPlan::where('trainer_id', $trainerId)->count();
 
+        $todaySessions = TrainerSession::where('trainer_id', $trainerId)
+            ->whereDate('scheduled_at', today())
+            ->with('member')
+            ->orderBy('scheduled_at')
+            ->get();
+
+        $latestPosts = TrainerPost::where('trainer_id', $trainerId)
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('trainer.dashboard', compact(
-            'memberCount', 'trainees', 'recentEvents', 'workoutPlansCount', 'nutritionPlansCount'
+            'memberCount', 'trainees', 'recentEvents', 'workoutPlansCount',
+            'nutritionPlansCount', 'todaySessions', 'latestPosts'
         ));
     }
 }
