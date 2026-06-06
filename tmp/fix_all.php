@@ -240,6 +240,22 @@ if (!Schema::hasTable('trainer_reels')) {
     echo "created ✅\n";
 } else echo "exists ✅\n";
 
+// Trainer sessions table
+echo "\nTrainer sessions... ";
+if (!Schema::hasTable('trainer_sessions')) {
+    Schema::create('trainer_sessions', function ($t) {
+        $t->id();
+        $t->foreignId('trainer_id')->constrained('users')->cascadeOnDelete();
+        $t->foreignId('member_id')->constrained('users')->cascadeOnDelete();
+        $t->dateTime('scheduled_at');
+        $t->integer('duration_minutes')->default(60);
+        $t->enum('status', ['scheduled', 'confirmed', 'completed', 'cancelled'])->default('scheduled');
+        $t->text('notes')->nullable();
+        $t->timestamps();
+    });
+    echo "created ✅\n";
+} else echo "exists ✅\n";
+
 // App settings table
 echo "\nApp settings... ";
 if (!Schema::hasTable('app_settings')) {
