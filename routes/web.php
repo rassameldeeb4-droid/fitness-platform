@@ -22,6 +22,7 @@ use App\Http\Controllers\Doctor\DashboardController as DoctorDashboardController
 use App\Http\Controllers\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Doctor\NutritionPlanController as DoctorNutritionPlanController;
 use App\Http\Controllers\Doctor\WorkoutPlanController as DoctorWorkoutPlanController;
+use App\Http\Controllers\Doctor\AppointmentController as DoctorAppointmentController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\NutritionController as MemberNutritionController;
 use App\Http\Controllers\Member\WorkoutController as MemberWorkoutController;
@@ -69,6 +70,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/gyms/{gym}', [AdminGymController::class, 'destroy'])->name('gyms.destroy');
         Route::get('/packages', [AdminPackageController::class, 'index'])->name('packages');
         Route::post('/packages', [AdminPackageController::class, 'store'])->name('packages.store');
+        Route::get('/packages/{package}/edit', [AdminPackageController::class, 'edit'])->name('packages.edit');
+        Route::put('/packages/{package}', [AdminPackageController::class, 'update'])->name('packages.update');
+        Route::delete('/packages/{package}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
         Route::get('/revenue', [AdminRevenueController::class, 'index'])->name('revenue');
         Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
@@ -92,6 +96,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
 
         Route::get('/doctors', [AdminDoctorController::class, 'index'])->name('doctors');
+        Route::get('/doctors/create', [AdminDoctorController::class, 'create'])->name('doctors.create');
+        Route::post('/doctors', [AdminDoctorController::class, 'store'])->name('doctors.store');
+        Route::get('/doctors/{id}', [AdminDoctorController::class, 'show'])->name('doctors.show');
     });
 
     // Trainer Routes
@@ -125,6 +132,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/workout/create/{memberId}', [DoctorWorkoutPlanController::class, 'create'])->name('workout.create');
         Route::post('/workout', [DoctorWorkoutPlanController::class, 'store'])->name('workout.store');
         Route::get('/workout/{id}', [DoctorWorkoutPlanController::class, 'show'])->name('workout.show');
+        Route::get('/appointments', [DoctorAppointmentController::class, 'index'])->name('appointments');
+        Route::get('/appointments/create', [DoctorAppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('/appointments', [DoctorAppointmentController::class, 'store'])->name('appointments.store');
+        Route::get('/appointments/{appointment}', [DoctorAppointmentController::class, 'show'])->name('appointments.show');
+        Route::post('/appointments/{appointment}/complete', [DoctorAppointmentController::class, 'complete'])->name('appointments.complete');
+        Route::post('/appointments/{appointment}/cancel', [DoctorAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
     // Member Routes
