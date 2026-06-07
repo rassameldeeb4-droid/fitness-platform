@@ -99,6 +99,7 @@ $files = [
     'database/migrations/2026_06_03_000003_create_trainer_reels_table.php',
     'resources/views/profiles/trainer.blade.php',
     'app/Http/Controllers/ProfileController.php',
+    'app/Http/Controllers/Doctor/DashboardController.php',
     'app/Models/AppSetting.php',
     'app/Http/Controllers/Admin/SettingsController.php',
     'resources/views/admin/settings.blade.php',
